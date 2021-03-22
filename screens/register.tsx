@@ -18,7 +18,7 @@ export const register = ({ navigation }) => {
             setStatus("Emails are not the same");
             return;
         }
-        fetch('http://157.245.176.240/createUser', {
+        fetch('ENDPOINT/createUser', {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -45,7 +45,7 @@ export const register = ({ navigation }) => {
       };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container_middle_align}>
         <ImageBackground source={require('../assets/images/books.jpg')} style={styles.image}>
           <View style={styles.login}>
           <Text style={styles.title}>Register</Text>
@@ -131,12 +131,12 @@ export const register = ({ navigation }) => {
             style={[styles.registerButton, styles.customerLogin]}
             onPress={register}
           >
-            <Text style={styles.loginButtonText}>Create Account</Text>
+            <Text style={styles.loginButtonText}>Create</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.registerButton, styles.heroLogin]}
             onPress={() =>
-                navigation.navigate('login')
+                navigation.navigate('home')
               }
           >
             <Text style={styles.loginButtonText}>Back</Text>
