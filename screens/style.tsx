@@ -1,3 +1,4 @@
+import { Montserrat_400Regular } from '@expo-google-fonts/montserrat';
 import React, {Component, useState} from 'react';
 import { ImageBackground, StyleSheet, Text, View,TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback } from "react-native";
 import { color } from 'react-native-reanimated';
@@ -13,11 +14,13 @@ export const colors = {
 
 const verticalSpace = 15
 
+
 export const styles = StyleSheet.create({
     container: {
       flex: 1,
       flexDirection: "column",
-      backgroundColor: colors.accent_dark
+      backgroundColor: colors.accent_dark,
+      fontFamily: "Montserrat_400Regular"
     },
     container_middle_align: {
       flex: 1,
@@ -25,12 +28,20 @@ export const styles = StyleSheet.create({
       justifyContent: "center",
       backgroundColor: colors.accent_dark
     },
+    container_horizontal_middle:{
+      flex: 1,
+      flexDirection: "column",
+      backgroundColor: colors.accent_dark,
+      alignItems: "center"
+    },
     container_header: {
       paddingTop: 10,
       paddingBottom: 10,
       backgroundColor: colors.background_dark,
       borderBottomWidth: 2,
-      borderBottomColor: colors.accent_blue
+      borderBottomColor: colors.accent_blue,
+      marginBottom: 10,
+      alignItems: "center",
     },
     image: {
       flex: 1,
@@ -46,12 +57,23 @@ export const styles = StyleSheet.create({
       textTransform: "uppercase"
     },
     title_header: {
+      letterSpacing:1,
       color: "white",
-      fontSize: 30,
+      fontFamily: "Montserrat_700Bold",
+      fontSize: 20,
       fontWeight: "bold",
       textAlign: "center",
       textTransform: "uppercase",
-      alignSelf: "center"
+      alignSelf: "center",
+      marginBottom: 10,
+    },
+    upper_case: {
+      textTransform: "uppercase"
+    },
+    text_white: {
+      color:"white",
+      fontFamily: "Montserrat_600SemiBold",
+      letterSpacing:1
     },
     login: {
       backgroundColor: "rgba(50,50,50,0.7)",
@@ -107,7 +129,7 @@ export const styles = StyleSheet.create({
       color: "#fefefe",
       textTransform: "uppercase",
       fontSize: 12,
-      textAlign: "center"
+      textAlign: "center",
     },
     register:{
       marginBottom: 50,
@@ -149,7 +171,10 @@ export const styles = StyleSheet.create({
         fontWeight: "600"
     },
     status:{
-        color:"white"
+        color:"red",
+        fontSize:14,
+        width:"100%",
+        textAlign:"center"
     },
     logo_header:{
       height:50,

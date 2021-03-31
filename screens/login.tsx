@@ -1,16 +1,17 @@
 import React, { Component, useState } from 'react';
-import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, AsyncStorage, Modal, Pressable } from "react-native";
+import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal, Pressable } from "react-native";
 import { styles } from './style';
-import { ENDPOINT } from '@env';
+import { PROD_ENDPOINT } from '@env';
 import { home } from './homescreen';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 
 
 export const login = ({ route, navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [status, setStatus] = useState('');
   const saveToken = async (token: string) => {
     route.params.setIsAuthed(true)
+    console.log(token);
     try {
       await AsyncStorage.setItem('userToken', token);
     } catch (error) {
@@ -21,7 +22,7 @@ export const login = ({ route, navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const login = () => {
-    fetch(`${ENDPOINT}/login`, {
+    fetch(`${PROD_ENDPOINT}/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -36,8 +37,9 @@ export const login = ({ route, navigation }) => {
         if (json.token != "false") {
           navigation.navigate('home');
           saveToken(json.token);
+        } else {
+          setStatus("Password or Username Incorrect");
         }
-
       })
       .catch((error) => {
         console.error(error);
@@ -45,9 +47,16 @@ export const login = ({ route, navigation }) => {
   };
   return (
     <View style={styles.container_middle_align}>
-      <ImageBackground source={require('../assets/images/books.jpg')} style={styles.image}>
+      <ImageBackground source={require('../assets/images/books-min.jpg')} style={styles.image}>
         <View style={styles.login}>
           <Text style={styles.title}>Book Heroes</Text>
+          <TextInput
+            style={styles.status}
+            placeholder=""
+            editable={false}
+            onChangeText={status => setStatus(status)}
+            defaultValue={status}
+          />
           <TextInput
             style={styles.input}
             onChangeText={username => setUsername(username)}
@@ -93,3 +102,7 @@ export const login = ({ route, navigation }) => {
     </View>
   );
 };
+function componentDidMount() {
+  throw new Error('Function not implemented.');
+}
+

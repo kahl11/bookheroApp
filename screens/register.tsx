@@ -2,6 +2,7 @@ import React, {Component, useState, setState} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ImageBackground, StyleSheet, Text, View,TextInput, TouchableOpacity, Alert } from "react-native";
 import { styles } from './style';
+import { PROD_ENDPOINT } from '@env';
 
 
 export const register = ({ navigation }) => {
@@ -18,7 +19,7 @@ export const register = ({ navigation }) => {
             setStatus("Emails are not the same");
             return;
         }
-        fetch('ENDPOINT/createUser', {
+        fetch(`${PROD_ENDPOINT}/createUser`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
