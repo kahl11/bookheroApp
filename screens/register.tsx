@@ -1,8 +1,11 @@
 import React, {Component, useState, setState} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ImageBackground, StyleSheet, Text, View,TextInput, TouchableOpacity, Alert } from "react-native";
-import { styles } from './style';
+import { styles } from '../styles/style';
+import { touchable_styles } from '../styles/touchable_styles'
 import { PROD_ENDPOINT } from '@env';
+import { SafeAreaView } from 'react-native';
+import { Fragment } from 'react';
 
 
 export const register = ({ navigation }) => {
@@ -46,9 +49,11 @@ export const register = ({ navigation }) => {
       };
 
     return (
-        <View style={styles.container_middle_align}>
+      <Fragment>
+      <SafeAreaView style={styles.background}/>
+      <SafeAreaView style={styles.container_middle_align}>
         <ImageBackground source={require('../assets/images/books.jpg')} style={styles.image}>
-          <View style={styles.login}>
+          <View style={touchable_styles.login}>
           <Text style={styles.title}>Register</Text>
           <TextInput
             style={styles.status}
@@ -129,23 +134,24 @@ export const register = ({ navigation }) => {
           </View> */}
           <View style={styles.row}>
           <TouchableOpacity
-            style={[styles.registerButton, styles.customerLogin]}
+            style={[touchable_styles.registerButton, touchable_styles.customerLogin]}
             onPress={register}
           >
-            <Text style={styles.loginButtonText}>Create</Text>
+            <Text style={touchable_styles.loginButtonText}>Create</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.registerButton, styles.heroLogin]}
+            style={[touchable_styles.registerButton, touchable_styles.heroLogin]}
             onPress={() =>
                 navigation.navigate('home')
               }
           >
-            <Text style={styles.loginButtonText}>Back</Text>
+            <Text style={touchable_styles.loginButtonText}>Back</Text>
           </TouchableOpacity>
           </View>
           </View>
         </ImageBackground>
-      </View>
+        </SafeAreaView>
+    </Fragment>
     );
 };
   

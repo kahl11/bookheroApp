@@ -1,10 +1,13 @@
 import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal, Pressable } from "react-native";
-import { styles } from './style';
+import { styles } from '../styles/style';
+import { touchable_styles } from '../styles/touchable_styles'
 import { PROD_ENDPOINT } from '@env';
 import { home } from './homescreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
+import { Fragment } from 'react';
+import { SafeAreaView } from 'react-native';
 
 
 export const login = ({ route, navigation }) => {
@@ -46,9 +49,11 @@ export const login = ({ route, navigation }) => {
       });
   };
   return (
-    <View style={styles.container_middle_align}>
+    <Fragment>
+    <SafeAreaView style={styles.background}/>
+    <SafeAreaView style={styles.container_middle_align}>
       <ImageBackground source={require('../assets/images/books-min.jpg')} style={styles.image}>
-        <View style={styles.login}>
+        <View style={touchable_styles.login}>
           <Text style={styles.title}>Book Heroes</Text>
           <TextInput
             style={styles.status}
@@ -74,32 +79,33 @@ export const login = ({ route, navigation }) => {
             onSubmitEditing={login}
           />
           <TouchableOpacity
-            style={[styles.loginButton, styles.wideButtonPink]}
+            style={[touchable_styles.loginButton, touchable_styles.wideButtonPink]}
             onPress={login}
           >
-            <Text style={styles.loginButtonText}>Login</Text>
+            <Text style={touchable_styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
           <View style={styles.row}>
             <TouchableOpacity
-              style={[styles.loginButton, styles.heroLogin]}
+              style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
               onPress={() =>
                 navigation.navigate('home')
               }
             >
-              <Text style={styles.loginButtonText}>Back</Text>
+              <Text style={touchable_styles.loginButtonText}>Back</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.loginButton, styles.heroLogin]}
+              style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
               onPress={() =>
                 navigation.navigate('register')
               }
             >
-              <Text style={styles.loginButtonText}>Register</Text>
+              <Text style={touchable_styles.loginButtonText}>Register</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>
-    </View>
+      </SafeAreaView>
+    </Fragment>
   );
 };
 function componentDidMount() {

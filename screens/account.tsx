@@ -1,11 +1,14 @@
 import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal, Pressable } from "react-native";
-import { colors, styles } from './style';
+import { colors, styles } from '../styles/style';
+import { touchable_styles } from '../styles/touchable_styles'
 import { PROD_ENDPOINT } from '@env';
 import { home } from './homescreen';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Fragment } from 'react';
+import { SafeAreaView } from 'react-native';
 
 
 
@@ -47,7 +50,9 @@ export const account = ({ route, navigation }) => {
     }
   getData();
   return (
-    <View style={styles.container}>
+    <Fragment>
+    <SafeAreaView style={styles.background}/>
+    <SafeAreaView style={styles.container}>
       <View style={styles.container_header}>
         <Text style={styles.title_header}>Profile</Text>
         <MaterialCommunityIcons name="account-circle" color={colors.accent_blue} size={90} />
@@ -55,22 +60,23 @@ export const account = ({ route, navigation }) => {
       </View>
       <View style={styles.container_horizontal_middle}>
       <TouchableOpacity
-          style={styles.wideButtonBlue}
+          style={touchable_styles.wideButtonBlue}
           onPress={() => navigation.navigate('editAccount')}
         >
-          <Text style={styles.loginButtonText}>Edit</Text>
+          <Text style={touchable_styles.loginButtonText}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.wideButtonPink}
+          style={touchable_styles.wideButtonPink}
           onPress={() => {
             AsyncStorage.removeItem("userToken");
             route.params.setIsAuthed(false);
           }
           }
         >
-          <Text style={styles.loginButtonText}>Log out</Text>
+          <Text style={touchable_styles.loginButtonText}>Log out</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      </SafeAreaView>
+    </Fragment>
   );
 };

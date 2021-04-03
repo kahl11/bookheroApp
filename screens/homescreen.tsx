@@ -1,14 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { Component, useEffect, useState } from 'react';
+import { Fragment } from 'react';
+import { SafeAreaView } from 'react-native';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, AsyncStorage, LogBox, Image } from "react-native";
 import { setConstantValue } from 'typescript';
-import { styles } from './style';
+import { styles } from '../styles/style';
+import { touchable_styles } from '../styles/touchable_styles'
 
 
 export const home = ({ navigation }) => {
 
   return (
-    <View style={styles.container}>
+    <Fragment>
+    <SafeAreaView style={styles.background}/>
+    <SafeAreaView style={styles.container}>
       <View style={styles.container_header}>
         <Text style={styles.title_header}>Book Hero</Text>
       </View>
@@ -17,21 +22,22 @@ export const home = ({ navigation }) => {
         source={require('../assets/images/logoWhite.png')}
       />
       <TouchableOpacity
-        style={[styles.wideButtonBlue,styles.listing_button]}
+        style={[touchable_styles.wideButtonBlue,styles.listing_button]}
         onPress={() =>
-          navigation.navigate('create_listing')
+          navigation.navigate('showListing')
         }
       >
-        <Text style={styles.loginButtonText}>Create Listing</Text>
+        <Text style={touchable_styles.loginButtonText}>Listings</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.wideButtonPink}
+        style={touchable_styles.wideButtonPink}
         onPress={() =>
           navigation.navigate('register')
         }
       >
-        <Text style={styles.loginButtonText}>Register</Text>
+        <Text style={touchable_styles.loginButtonText}>Register</Text>
       </TouchableOpacity>
-    </View>
+      </SafeAreaView>
+    </Fragment>
   );
 };

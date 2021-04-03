@@ -7,7 +7,7 @@ import { account } from './screens/account';
 import { createListing } from './screens/createListing';
 import { showListing } from './screens/showListings';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { styles, colors } from './screens/style';
+import { styles, colors } from './styles/style';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useEffect, useState } from 'react';
 import * as Font from 'expo-font';

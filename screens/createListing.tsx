@@ -1,13 +1,16 @@
 import React, { Component, useState } from 'react';
-import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, LogBox, Image } from "react-native";
-import { styles } from './style';
+import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, LogBox, Image, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView } from "react-native";
+import { styles } from '../styles/style';
+import { touchable_styles } from '../styles/touchable_styles'
 import * as ImagePicker from 'expo-image-picker';
 import { PROD_ENDPOINT } from '@env';
 import * as Crypto from 'expo-crypto';
+import { Fragment } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 
 export const createListing = ({ navigation }) => {
-  const [Image, setImage] = useState({});
+  const [SelectedImage, setImage] = useState({});
   const [Status, setStatus] = useState("");
   const pickImage = async () => {
 
@@ -23,9 +26,9 @@ export const createListing = ({ navigation }) => {
   const handleUploadPhoto = async () => {
     const name = await Crypto.digestStringAsync( //use the sha1 as the filename, we dont want to store use inputted filesnames on our server
       Crypto.CryptoDigestAlgorithm.SHA1,
-      Image.uri + Date.now() //safe filename for storage on server
+      SelectedImage.uri + Date.now() //safe filename for storage on server
     );
-    let localUri = Image.uri;
+    let localUri = SelectedImage.uri;
     let filename = localUri.split('/').pop();
     console.log(name)
     // Infer the type of the image
@@ -56,22 +59,74 @@ export const createListing = ({ navigation }) => {
       });
   }
   return (
-    <View style={styles.container}>
-      <View style={styles.container_header}>
-        <Text style={styles.title_header}>Book Hero</Text>
-      </View>
-      <TouchableOpacity
-        style={[styles.wideButtonBlue]}
-        onPress={pickImage}
-      >
-        <Text style={styles.loginButtonText}>Select Image</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.wideButtonBlue]}
-        onPress={handleUploadPhoto}
-      >
-        <Text style={styles.loginButtonText}>Upload</Text>
-      </TouchableOpacity>
-    </View>
+    <Fragment>
+      <SafeAreaView style={styles.background} />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.container_header}>
+          <Text style={styles.title_header}>Create Listing</Text>
+        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
+          keyboardVerticalOffset={200}
+        >
+
+          <TouchableOpacity
+            style={[touchable_styles.imageSelector]}
+            onPress={pickImage}
+          >
+
+            {SelectedImage.uri ? (
+              <Image
+                source={{ uri: SelectedImage.uri }}
+                resizeMode="cover"
+                style={{ width: "100%", height: "100%" }}
+              />
+            ) :
+              <Fragment>
+                <MaterialCommunityIcons name="plus" color="white" size={22} />
+                <Text style={touchable_styles.imageSelectorText}>Select Image</Text>
+              </Fragment>
+            }
+          </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 3, alignItems: "center" }}>
+              <TextInput
+                style={styles.input}
+                // onChangeText={}
+                placeholder="Textbook Title"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                // onChangeText={}
+                placeholder="Course"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                // onChangeText={}
+                keyboardType="decimal-pad"
+                placeholder="$ Price"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.tallInput}
+                // onChangeText={}
+                placeholder="Decscription"
+                autoCapitalize="none"
+                multiline={true}
+              />
+              <TouchableOpacity
+                style={[touchable_styles.wideButtonBlue, { marginTop: 15 }]}
+                onPress={handleUploadPhoto}
+              >
+                <Text style={touchable_styles.loginButtonText}>Upload</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </Fragment >
   );
 };
