@@ -54,7 +54,7 @@ export const editAccount = ({ route, navigation }) => {
         <SafeAreaView style={styles.container}>
             <View style={styles.container_header}>
                 <Text style={styles.title_header}>Profile</Text>
-                <MaterialCommunityIcons name="account-circle" color={colors.accent_blue} size={90} />
+                <MaterialCommunityIcons name="account-circle" color={colors.accent} size={90} />
             </View>
             <View style={styles.container_horizontal_middle}>
                 <View style={styles.row}>
@@ -64,7 +64,7 @@ export const editAccount = ({ route, navigation }) => {
                             navigation.navigate('account')
                         }
                     >
-                        <Text style={touchable_styles.loginButtonText}>Cancel</Text>
+                        <Text style={touchable_styles.lightText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
@@ -72,7 +72,7 @@ export const editAccount = ({ route, navigation }) => {
                             navigation.navigate('account')
                         }
                     >
-                        <Text style={touchable_styles.loginButtonText}>done</Text>
+                        <Text style={touchable_styles.lightText}>done</Text>
                     </TouchableOpacity>
                 </View>
             </View>

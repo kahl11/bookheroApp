@@ -10,8 +10,8 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { styles, colors } from './styles/style';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useEffect, useState } from 'react';
-import * as Font from 'expo-font';
-import { useFonts, Montserrat_500Medium, Montserrat_600SemiBold, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
+import { useFonts, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { Rubik_400Regular } from '@expo-google-fonts/rubik';
 import AppLoading from 'expo-app-loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -67,9 +67,8 @@ const App = () => {
   }, []);
 
   let [fontsLoaded] = useFonts({
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold
+    Poppins_700Bold,
+    Rubik_400Regular
   });
 
   if (!fontsLoaded) {
@@ -78,8 +77,8 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        activeColor={colors.accent_pink}
-        inactiveColor={colors.accent_blue}
+        activeColor={colors.main}
+        inactiveColor={colors.accent}
         barStyle={{ backgroundColor: "#121212" }}
         labeled={true}
         shifting={false}

@@ -22,20 +22,20 @@ export const home = ({ navigation }) => {
         source={require('../assets/images/logoWhite.png')}
       />
       <TouchableOpacity
-        style={[touchable_styles.wideButtonBlue,styles.listing_button]}
+        style={[touchable_styles.wideButtonLight,styles.listing_button]}
         onPress={() =>
           navigation.navigate('showListing')
         }
       >
-        <Text style={touchable_styles.loginButtonText}>Listings</Text>
+        <Text style={touchable_styles.darkText}>Listings</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={touchable_styles.wideButtonPink}
+        style={touchable_styles.wideButtonDark}
         onPress={() =>
           navigation.navigate('register')
         }
       >
-        <Text style={touchable_styles.loginButtonText}>Register</Text>
+        <Text style={touchable_styles.lightText}>Register</Text>
       </TouchableOpacity>
       </SafeAreaView>
     </Fragment>

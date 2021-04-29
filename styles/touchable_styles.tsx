@@ -1,13 +1,19 @@
-import { Montserrat_400Regular } from '@expo-google-fonts/montserrat';
+import { Rubik_400Regular } from '@expo-google-fonts/rubik';
 import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback } from "react-native";
-import { color } from 'react-native-reanimated';
+import { block, color } from 'react-native-reanimated';
 import { colors } from './style';
 
+
+const shadowWidth = 0;
+const shadowHeight = 5;
+const shadowColor = 'black';
+const shadowOpacity = 0.3;
+
 export const touchable_styles = StyleSheet.create({
-    wideButtonBlue: {
+    wideButtonDark: {
         alignSelf: "center",
-        backgroundColor: colors.button_blue,
+        backgroundColor: colors.accent,
         marginTop: "2%",
         marginLeft: "2%",
         marginRight: "2%",
@@ -17,11 +23,14 @@ export const touchable_styles = StyleSheet.create({
         textAlignVertical: "center",
         paddingTop: 12,
         borderRadius: 3,
-        marginBottom: 10
+        marginBottom: 10,
+        shadowOffset: { height: shadowHeight, width: shadowWidth },
+        shadowColor: shadowColor,
+        shadowOpacity: shadowOpacity,
     },
-    wideButtonPink: {
+    wideButtonLight: {
         alignSelf: "center",
-        backgroundColor: colors.button_pink,
+        backgroundColor: colors.main,
         marginTop: "2%",
         marginLeft: "2%",
         marginRight: "2%",
@@ -31,20 +40,29 @@ export const touchable_styles = StyleSheet.create({
         textAlignVertical: "center",
         paddingTop: 12,
         borderRadius: 3,
-        marginBottom: 10
+        marginBottom: 10,
+        shadowOffset: { height: shadowHeight, width: shadowWidth },
+        shadowColor: shadowColor,
+        shadowOpacity: shadowOpacity,
     },
     heroLogin: {
-        backgroundColor: colors.button_blue
+        backgroundColor: colors.accent
     },
     customerLogin: {
-        backgroundColor: colors.button_pink
+        backgroundColor: colors.accent
     },
     register: {
-        marginBottom: 50,
         width: "80%",
-        backgroundColor: "grey"
+        backgroundColor: colors.dark
     },
-    loginButtonText: {
+    darkText: {
+        fontWeight: "600",
+        color: "#0C0E12",
+        textTransform: "uppercase",
+        fontSize: 12,
+        textAlign: "center",
+    },
+    lightText: {
         fontWeight: "600",
         color: "#fefefe",
         textTransform: "uppercase",
@@ -60,7 +78,9 @@ export const touchable_styles = StyleSheet.create({
         textAlignVertical: "center",
         paddingTop: 12,
         borderRadius: 3,
-        marginBottom: 50
+        shadowOffset: { height: shadowHeight, width: shadowWidth },
+        shadowColor: shadowColor,
+        shadowOpacity: shadowOpacity,
     },
     registerButton: {
         marginLeft: "2%",
@@ -71,24 +91,25 @@ export const touchable_styles = StyleSheet.create({
         textAlignVertical: "center",
         paddingTop: 12,
         borderRadius: 3,
-        marginBottom: "10%"
+        shadowOffset: { height: 5, width: 0 },
+        shadowColor: 'black',
+        shadowOpacity: 0.3,
     },
     login: {
-        backgroundColor: "rgba(50,50,50,0.7)",
+        backgroundColor: colors.background_dark,
         marginLeft: "10%",
         marginRight: "10%",
         justifyContent: "center",
         textAlign: "center",
         alignItems: "center",
-        borderRadius: 3
+        borderRadius: 5,
 
     },
-    imageSelector:{
-        flex: 2,
+    imageSelector: {
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: "center",
-        backgroundColor: colors.accent_light_grey,
+        backgroundColor: colors.blue_grey,
         marginTop: "2%",
         marginLeft: "2%",
         marginRight: "2%",
@@ -96,8 +117,26 @@ export const touchable_styles = StyleSheet.create({
         height: 240,
         borderRadius: 3,
         marginBottom: 10,
+        shadowOffset: { height: shadowHeight, width: shadowWidth },
+        shadowColor: shadowColor,
+        shadowOpacity: shadowOpacity,
     },
-    imageSelectorText:{
-        color:"white"
+    imageSelectorText: {
+        color: "white"
+    },
+
+    productRow: {
+        width: '95%',
+        marginLeft: '2.5%',
+        marginBottom: 10,
+        height: 140,
+        shadowOffset: { height: shadowHeight, width: shadowWidth },
+        shadowColor: shadowColor,
+        shadowOpacity: shadowOpacity,
+        backgroundColor: colors.blue_grey,
+        borderRadius: 5,
+    },
+    productRowImage: {
+        width:70
     },
 });

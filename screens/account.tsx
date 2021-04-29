@@ -55,25 +55,25 @@ export const account = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.container_header}>
         <Text style={styles.title_header}>Profile</Text>
-        <MaterialCommunityIcons name="account-circle" color={colors.accent_blue} size={90} />
+        <MaterialCommunityIcons name="account-circle" color={colors.main} size={90} />
         <Text style={[styles.text_white, styles.upper_case]}>{username}</Text>
       </View>
       <View style={styles.container_horizontal_middle}>
       <TouchableOpacity
-          style={touchable_styles.wideButtonBlue}
+          style={touchable_styles.wideButtonLight}
           onPress={() => navigation.navigate('editAccount')}
         >
-          <Text style={touchable_styles.loginButtonText}>Edit</Text>
+          <Text style={touchable_styles.darkText}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={touchable_styles.wideButtonPink}
+          style={touchable_styles.wideButtonDark}
           onPress={() => {
             AsyncStorage.removeItem("userToken");
             route.params.setIsAuthed(false);
           }
           }
         >
-          <Text style={touchable_styles.loginButtonText}>Log out</Text>
+          <Text style={touchable_styles.lightText}>Log out</Text>
         </TouchableOpacity>
       </View>
       </SafeAreaView>

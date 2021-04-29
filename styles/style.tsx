@@ -1,52 +1,51 @@
-import { Montserrat_400Regular } from '@expo-google-fonts/montserrat';
+import { Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { Rubik_400Regular } from '@expo-google-fonts/rubik';
 import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback } from "react-native";
 import { color } from 'react-native-reanimated';
 
 export const colors = {
-  button_pink: "#FF99C9",
-  button_blue: "#6564DB",
   background_dark: "#121212",
-  accent_dark: "#212121",
-  accent_blue: "#89D2DC",
-  accent_pink: "#DD7596",
-  accent_light_grey: "#353536",
+  dark: "#212121",
+  main: "#bbf299",
+  accent: "#007366",
+  blue_grey: '#0C0E12',
+  off_white: '#E0E0E0',
 }
 
 const verticalSpace = 15
 
 
 export const styles = StyleSheet.create({
-  background:{
+  background: {
     flex: 0,
     backgroundColor: colors.background_dark,
   },
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: colors.accent_dark,
-    fontFamily: "Montserrat_400Regular"
+    backgroundColor: colors.dark,
+    fontFamily: "Rubik_400Regular"
   },
   container_middle_align: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    backgroundColor: colors.accent_dark
+    backgroundColor: colors.dark
   },
   container_horizontal_middle: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: colors.accent_dark,
-    alignItems: "center"
+    backgroundColor: colors.dark,
+    alignItems: "center",
+    justifyContent: "center"
   },
   container_header: {
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: colors.background_dark,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.accent_blue,
-    marginBottom: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
   image: {
     flex: 1,
@@ -55,7 +54,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     paddingTop: 30,
-    color: "white",
+    color: colors.off_white,
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
@@ -64,43 +63,50 @@ export const styles = StyleSheet.create({
   title_header: {
     letterSpacing: 1,
     color: "white",
-    fontFamily: "Montserrat_700Bold",
+    fontFamily: "Poppins_700Bold",
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     textTransform: "uppercase",
     alignSelf: "center",
-    marginBottom: 10,
+    marginBottom: 5,
+    marginTop: 5,
   },
   upper_case: {
     textTransform: "uppercase"
   },
   text_white: {
     color: "white",
-    fontFamily: "Montserrat_600SemiBold",
+    fontFamily: "Rubik_400Regular",
     letterSpacing: 1
   },
   input: {
     marginTop: verticalSpace,
     width: "80%",
-    backgroundColor: "white",
+    backgroundColor: colors.off_white,
     height: 40,
     borderRadius: 3,
     paddingLeft: 10,
+    shadowOffset: { height: 5, width: 0 },
+    shadowColor: 'black',
+    shadowOpacity: 0.3,
   },
   tallInput: {
     marginTop: verticalSpace,
     width: "80%",
-    backgroundColor: "white",
+    backgroundColor: colors.off_white,
     height: 120,
     borderRadius: 3,
     paddingLeft: 10,
+    shadowOffset: { height: 5, width: 0 },
+    shadowColor: 'black',
+    shadowOpacity: 0.3,
   },
   halfInput: {
     marginTop: verticalSpace,
     width: "38%",
     marginRight: "2%",
-    backgroundColor: "white",
+    backgroundColor: colors.off_white,
     height: 40,
     borderRadius: 3,
     paddingLeft: 10,
@@ -119,7 +125,7 @@ export const styles = StyleSheet.create({
   },
   header: {
     marginTop: 50,
-    color: "white",
+    color: colors.off_white,
     fontSize: 20
   },
   dropdown: {
@@ -130,8 +136,10 @@ export const styles = StyleSheet.create({
   },
   text: {
     marginTop: verticalSpace,
-    color: "white",
-    fontWeight: "600"
+    color: colors.off_white,
+    fontWeight: "600",
+    letterSpacing: 0.06,
+    fontFamily: "Rubik_400Regular"
   },
   status: {
     color: "red",
@@ -161,5 +169,10 @@ export const styles = StyleSheet.create({
   listing_button: {
     marginTop: 20
   },
-
+  listingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    flexDirection: 'column'
+  }
 });
