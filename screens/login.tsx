@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal, Pressable, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { styles } from '../styles/style';
 import { touchable_styles } from '../styles/touchable_styles'
-import { PROD_ENDPOINT } from '@env';
+import { ENDPOINT } from '@env';
 import { home } from './homescreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
@@ -17,6 +17,7 @@ export const login = ({ route, navigation }: any) => {
     console.log(token);
     try {
       await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('username', username);
     } catch (error) {
       // Error retrieving data
       console.log(error.message);
@@ -25,7 +26,7 @@ export const login = ({ route, navigation }: any) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const login = () => {
-    fetch(`${PROD_ENDPOINT}/login`, {
+    fetch(`${ENDPOINT}/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

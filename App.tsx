@@ -9,21 +9,22 @@ import { showListing } from './screens/showListings';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { styles, colors } from './styles/style';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useFonts, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { Rubik_400Regular } from '@expo-google-fonts/rubik';
 import AppLoading from 'expo-app-loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createStackNavigator } from '@react-navigation/stack';
 import { editAccount } from './screens/editAccount';
-
-
+import { PostPageContext } from './constants/context';
+import { individualListing } from './screens/individualListing'
 const Tab = createMaterialBottomTabNavigator();
 const AccountStack = createStackNavigator();
 const loginStack = createStackNavigator();
 const ListingsStack = createStackNavigator();
 
-function AccountNavigator({ route }) {
+
+function AccountNavigator({ route }: any) {
   console.log(route.params.setIsAuthed)
   return (
     <AccountStack.Navigator headerMode={"none"}>
@@ -33,7 +34,7 @@ function AccountNavigator({ route }) {
   );
 }
 
-function LoginNavigator({ route }) {
+function LoginNavigator({ route }: any) {
   console.log(route.params.setIsAuthed)
   return (
     <AccountStack.Navigator headerMode={"none"}>
@@ -44,11 +45,15 @@ function LoginNavigator({ route }) {
 }
 
 function ListingsNavigator() {
+  const [postPage, setPostPage] = useState(0);
   return (
+    <PostPageContext.Provider value={{postPage,setPostPage}}>
     <AccountStack.Navigator headerMode={"none"}>
       <AccountStack.Screen name="showListing" component={showListing} />
       <AccountStack.Screen name="createListing" component={createListing} />
+      <AccountStack.Screen name="individualListing" component={individualListing} />
     </AccountStack.Navigator>
+    </PostPageContext.Provider>
   );
 }
 

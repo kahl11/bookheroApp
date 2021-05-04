@@ -3,7 +3,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { styles } from '../styles/style';
 import { touchable_styles } from '../styles/touchable_styles'
-import { PROD_ENDPOINT } from '@env';
+import { ENDPOINT } from '@env';
 import { SafeAreaView } from 'react-native';
 import { Fragment } from 'react';
 
@@ -23,7 +23,7 @@ export const register = ({ navigation }) => {
       setStatus("Emails are not the same");
       return;
     }
-    fetch(`${PROD_ENDPOINT}/createUser`, {
+    fetch(`${ENDPOINT}/createUser`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

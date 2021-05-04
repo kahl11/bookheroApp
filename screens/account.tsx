@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal, Pressable } from "react-native";
 import { colors, styles } from '../styles/style';
 import { touchable_styles } from '../styles/touchable_styles'
-import { PROD_ENDPOINT } from '@env';
+import { ENDPOINT } from '@env';
 import { home } from './homescreen';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useEffect } from 'react';
@@ -23,7 +23,7 @@ export const account = ({ route, navigation }) => {
         if(token !== null) {
           setUserToken(token);
           if (username == "") {
-            fetch(`${PROD_ENDPOINT}/getUserData`, {
+            fetch(`${ENDPOINT}/getUserData`, {
               method: 'POST',
               headers: {
                 Accept: 'application/json',

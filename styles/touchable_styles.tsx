@@ -135,8 +135,30 @@ export const touchable_styles = StyleSheet.create({
         shadowOpacity: shadowOpacity,
         backgroundColor: colors.blue_grey,
         borderRadius: 5,
+        flexDirection: 'row',
+        flexWrap: 'wrap'
     },
     productRowImage: {
-        width:70
+        width: '100%',
+        height:'100%',
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5
     },
+    productRowImageView: {
+        width: '47.5%',
+        height: '100%',
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+    },
+    productRowTextView: {
+        width: '47.5%',
+        height: '100%'
+    },
+    productText: {
+        fontWeight: "600",
+        color: "#fefefe",
+        textTransform: "uppercase",
+        fontSize: 14,
+        marginLeft: 20,
+    }
 });

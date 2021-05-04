@@ -1,20 +1,23 @@
 import React, { Component, useState, useRef, useEffect } from 'react';
-import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, LogBox, Image, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView } from "react-native";
+import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, LogBox, Image, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, AsyncStorage } from "react-native";
 import { colors, styles } from '../styles/style';
 import { touchable_styles } from '../styles/touchable_styles'
 import * as ImagePicker from 'expo-image-picker';
-import { PROD_ENDPOINT } from '@env';
+import { ENDPOINT } from '@env';
 import * as Crypto from 'expo-crypto';
 import { Fragment } from 'react';
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 interface post {
   imageName: string,
   title: string,
   course: string,
   price: number,
-  description: string
-  school: string
+  description: string,
+  school: string,
+  user: string
 }
 const handleUploadPhoto = async (SelectedImage: any, setStatus: Function, imageName:string) => {
   let localUri = SelectedImage.uri;
@@ -27,7 +30,7 @@ const handleUploadPhoto = async (SelectedImage: any, setStatus: Function, imageN
   let formData = new FormData();
   formData.append('file', { uri: localUri, name: (imageName), type });
 
-  fetch(`${PROD_ENDPOINT}/sendImage`, {
+  fetch(`${ENDPOINT}/sendImage`, {
     method: 'POST',
     body: formData,
     headers: {
@@ -58,11 +61,11 @@ const pickImage = async (setImage: Function, setImageName:Function) => {
     result.uri + Date.now() //safe filename for storage on server
   );
   let match = /\.(\w+)$/.exec(result.uri.split('/').pop());
-  setImageName(name+match);
+  if(match) setImageName(name+match[0]);
 }
 
-const uploadPost = async (post: post) => {
-  fetch(`${PROD_ENDPOINT}/createPost`, {
+const uploadPost = async (post: post, navigation: any) => {
+  fetch(`${ENDPOINT}/createPost`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -74,12 +77,13 @@ const uploadPost = async (post: post) => {
       course: post.course,
       price: post.price,
       description: post.description,
-      school: post.school
+      school: post.school,
+      user: post.user
     })
   }).then((response) => response.json())
     .then((json) => {
-      if (json.status == "success") {
-        return; //handle better
+      if (json.status == "SUCCESS") {
+        navigation.navigate("showListing");
       }
     })
     .catch((error) => {
@@ -96,6 +100,37 @@ export const createListing = ({ navigation }: any) => {
   const [price, setPrice] = useState(-1);
   const [description, setDescription] = useState("");
   const [school, setSchool] = useState("");
+  const [username, setUsername] = useState("");
+
+  const [location, setLocation] = useState<any>(null);
+
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== 'granted') {
+        console.log("need permission for location");
+        return;
+      }
+
+      let loc = await Location.getCurrentPositionAsync({});
+      // console.log("got location: ", loc);
+      setLocation(loc);
+    })();
+  }, []);
+
+  const getUser = async () => {
+    try {
+      let user = await AsyncStorage.getItem('username');
+      if(user) setUsername(user);
+    } catch (e) {
+      // error reading value
+    }
+  }
+  useEffect(() => {
+    getUser();
+  }, []);
+
   return (
     <Fragment>
       <SafeAreaView style={styles.background} />
@@ -127,7 +162,21 @@ export const createListing = ({ navigation }: any) => {
                   </Fragment>
                 }
               </TouchableOpacity>
-
+              {location?
+              <MapView style={{width:'100%', height:'100%'}}
+                  initialRegion={{
+                  latitude: location.coords.latitude-0.05,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.05,
+                  longitudeDelta: 0.05,
+                }}
+              >
+              <Marker draggable
+                coordinate={{latitude: location.coords.latitude, longitude: location.coords.longitude}}
+                onDragEnd={(e) => {}}
+              />
+              </MapView>
+              :null}
               <TextInput
                 style={styles.input}
                 onChangeText={setBookTitle}
@@ -166,8 +215,8 @@ export const createListing = ({ navigation }: any) => {
               <TouchableOpacity //upload button
                 style={[touchable_styles.wideButtonLight, { marginTop: 15 }]}
                 onPress={() => handleUploadPhoto(SelectedImage, setStatus, imageName).then(() => {
-                  let newPost: post = { course: classCode, imageName: imageName, title: bookTitle, price: price, description: description, school: school }
-                  uploadPost(newPost)
+                  let newPost: post = { course: classCode, imageName: imageName, title: bookTitle, price: price, description: description, school: school, user: username }
+                  uploadPost(newPost, navigation)
                 }
                 )}
               >
