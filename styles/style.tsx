@@ -174,5 +174,26 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     flexDirection: 'column'
+  },
+  individualListingContainer: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: colors.dark,
+    fontFamily: "Rubik_400Regular"
+  },
+  individualListingText:{
+    fontFamily: 'Rubik_400Regular',
+    color: colors.off_white,
+    fontSize: 14,
+  },
+  individialListingDesc:{
+    backgroundColor: colors.blue_grey,
+    width: '80%',
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'center',
+    minHeight: 40
   }
 });

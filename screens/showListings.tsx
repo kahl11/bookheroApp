@@ -21,65 +21,92 @@ const queryClient = new QueryClient({
     },
 })
 
-const ListingRow = ({ setPostPage, navigation }: any) => {
-    const fetchPosts = ({ pageParam = 0 }) => {
-        let responce = axios.get(`${ENDPOINT}/getPosts?page=` + pageParam);
-        // console.log(responce);
-        return responce;
-    };
-
+const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
+    const [height, setHeight] = useState(0);
+    const [pageParam, setPageParam] = useState(0);
+    const [endOfpages, setEndOfPages] = useState(0);
     const {
+        status,
         data,
         error,
-        fetchNextPage,
-        hasNextPage,
         isFetching,
         isFetchingNextPage,
-        status,
-    } = useInfiniteQuery('posts', fetchPosts, {
-        getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
-    })
+        isFetchingPreviousPage,
+        fetchNextPage,
+        fetchPreviousPage,
+        hasNextPage,
+        hasPreviousPage,
+    } = useInfiniteQuery(
+        ['posts', filter],
+        async () => {
+            // console.log(`${ENDPOINT}/getPosts?page=${pageParam}`);
+            const res = await axios.get(`${ENDPOINT}/getPosts?page=${pageParam}`);
+            setPageParam(pageParam + 1);
+            return res
+        },
+        {
+            getPreviousPageParam: firstPage => false,
+            getNextPageParam: lastPage => false
+        }
+    )
     return status === 'loading' ? (
         <Text>Loading...</Text>
     ) : status === 'error' ? (
         <Text>Error: {error.message}</Text>
     ) : (
-        <>
+        <ScrollView
+            style={[{ paddingTop: 20 }]}
+            scrollEventThrottle={100}
+            onScroll={(e) => {
+                if (e.nativeEvent.contentOffset.y / (height - 500) > 0.8 && !isFetching && pageParam <= maxPages) {
+                    fetchNextPage();
+                }
+            }}
+            onContentSizeChange={(width, height) => {
+                setHeight(height);
+            }}
+        >
             { data.pages.map((page) => {
                 {
-                    return(
-                    page.data.map((pageData) => {
-                        // console.log(pageData[4]);
-                        return (
-                            <TouchableOpacity style={touchable_styles.productRow}
-                                onPress={() => {
-                                    setPostPage(pageData[0]);
-                                    navigation.navigate("individualListing");
-                                }}
-                            >
-                                <View style={touchable_styles.productRowImageView}>
-                                    <Image style={touchable_styles.productRowImage} source={{uri: ENDPOINT+'/'+pageData[4]}}></Image>
-                                </View>
-                                <View style={touchable_styles.productRowTextView}>
-                                    <Text style={[touchable_styles.productText, {marginTop: 10}]}>{pageData[1]}</Text>
-                                    <Text style={touchable_styles.productText}>{pageData[6]}</Text>
-                                    <Text style={[touchable_styles.productText, {fontSize: 18, marginTop: 10}]}>${pageData[5]}</Text>
-                                    <Text style={[touchable_styles.productText, {marginTop: 10}]}>By: {pageData[7]}</Text>
-                                    <Text style={[touchable_styles.productText,{}]}>{new Date(pageData[8]).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Text>     
-                                </View>
-                            </TouchableOpacity>
-                        );
-                    })
+                    return (
+                        page.data.map((pageData) => {
+                            return (
+                                <TouchableOpacity style={touchable_styles.productRow}
+                                    onPress={() => {
+                                        navigation.navigate("individualListing");
+                                    }}
+                                >
+                                    <View style={touchable_styles.productRowImageView}>
+                                        <Image style={touchable_styles.productRowImage} source={{ uri: ENDPOINT + '/' + pageData[4] }}></Image>
+                                    </View>
+                                    <View style={touchable_styles.productRowTextView}>
+                                        <Text style={[touchable_styles.productText, { marginTop: 10 }]}>{pageData[1]}</Text>
+                                        <Text style={touchable_styles.productText}>{pageData[6]}</Text>
+                                        <Text style={[touchable_styles.productText, { fontSize: 18, marginTop: 10 }]}>${pageData[5]}</Text>
+                                        <Text style={[touchable_styles.productText, { marginTop: 10 }]}>By: {pageData[7]}</Text>
+                                        <Text style={[touchable_styles.productText, {}]}>{new Date(pageData[8]).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        })
                     );
                 }
             })
             }
-        </>
+        </ScrollView>
     )
 }
 
 export const showListing = ({ navigation }) => {
-    let {postPage, setPostPage} = useContext(PostPageContext);
+    let { postPage, setPostPage } = useContext(PostPageContext);
+    const [filter, setFilter] = useState(0);
+    const [maxPages, setMaxPages] = useState<number | null>(null);
+
+    const getNumPages = async () => {
+        let mp = await axios.get(`${ENDPOINT}/getNumPostPages`);
+        setMaxPages(mp.data);
+    }
+    useEffect(() => { getNumPages() }, [])
     return (
         <Fragment>
             <SafeAreaView style={styles.background} />
@@ -88,13 +115,13 @@ export const showListing = ({ navigation }) => {
                     <Text style={styles.title_header}>Find Books</Text>
                     <View style={[styles.row, { marginTop: 25 }]}>
                         <TouchableOpacity
-                            style={[touchable_styles.registerButton, touchable_styles.customerLogin]}
-                            onPress={() => { }}
+                            style={[touchable_styles.halfButtonDark]}
+                            onPress={() => setFilter(filter + 1)}
                         >
                             <Text style={touchable_styles.lightText}>Filter</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[touchable_styles.registerButton, touchable_styles.heroLogin]}
+                            style={[touchable_styles.halfButtonDark]}
                             onPress={() => { navigation.navigate('createListing') }}
                         >
                             <Text style={touchable_styles.lightText}>Create Listing</Text>
@@ -105,12 +132,11 @@ export const showListing = ({ navigation }) => {
                         placeholder="Search"
                     />
                 </View>
-                <ScrollView style={[{ paddingTop: 20 }]} >
-                    <QueryClientProvider client={queryClient}>
-                        <ListingRow setPostPage={setPostPage} navigation={navigation}/>
-                        {/* <ReactQueryDevtools initialIsOpen /> */}
-                    </QueryClientProvider>
-                </ScrollView>
+                <QueryClientProvider client={queryClient}>
+                    {maxPages ?
+                        <ListingRow setPostPage={setPostPage} navigation={navigation} filter={filter} maxPages={maxPages} />
+                        : null}
+                </QueryClientProvider>
             </SafeAreaView>
         </Fragment>
     );

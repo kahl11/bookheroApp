@@ -1,5 +1,5 @@
 import React, { Component, useState, useRef, useEffect } from 'react';
-import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, LogBox, Image, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, AsyncStorage } from "react-native";
+import { ImageBackground, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Alert, LogBox, Image, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, AsyncStorage, ActivityIndicator } from "react-native";
 import { colors, styles } from '../styles/style';
 import { touchable_styles } from '../styles/touchable_styles'
 import * as ImagePicker from 'expo-image-picker';
@@ -9,7 +9,7 @@ import { Fragment } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-
+import { locationType } from '../constants/Constants'
 interface post {
   imageName: string,
   title: string,
@@ -17,9 +17,10 @@ interface post {
   price: number,
   description: string,
   school: string,
-  user: string
+  user: string,
+  location: locationType
 }
-const handleUploadPhoto = async (SelectedImage: any, setStatus: Function, imageName:string) => {
+const handleUploadPhoto = async (SelectedImage: any, setStatus: Function, imageName: string) => {
   let localUri = SelectedImage.uri;
   let filename = localUri.split('/').pop();
   // Infer the type of the image
@@ -48,7 +49,7 @@ const handleUploadPhoto = async (SelectedImage: any, setStatus: Function, imageN
     });
 }
 
-const pickImage = async (setImage: Function, setImageName:Function) => {
+const pickImage = async (setImage: Function, setImageName: Function) => {
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
@@ -61,10 +62,13 @@ const pickImage = async (setImage: Function, setImageName:Function) => {
     result.uri + Date.now() //safe filename for storage on server
   );
   let match = /\.(\w+)$/.exec(result.uri.split('/').pop());
-  if(match) setImageName(name+match[0]);
+  if (match) setImageName(name + match[0]);
 }
 
 const uploadPost = async (post: post, navigation: any) => {
+  const yJitter = Math.random()*0.002;
+  const xJitter = Math.random()*0.002;
+  const location = {'lat': post.location.lat+xJitter, 'long': post.location.long+yJitter}
   fetch(`${ENDPOINT}/createPost`, {
     method: 'POST',
     headers: {
@@ -78,7 +82,8 @@ const uploadPost = async (post: post, navigation: any) => {
       price: post.price,
       description: post.description,
       school: post.school,
-      user: post.user
+      user: post.user,
+      location: location
     })
   }).then((response) => response.json())
     .then((json) => {
@@ -102,7 +107,8 @@ export const createListing = ({ navigation }: any) => {
   const [school, setSchool] = useState("");
   const [username, setUsername] = useState("");
 
-  const [location, setLocation] = useState<any>(null);
+  const [location, setLocation] = useState<locationType | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
 
   useEffect(() => {
@@ -115,14 +121,14 @@ export const createListing = ({ navigation }: any) => {
 
       let loc = await Location.getCurrentPositionAsync({});
       // console.log("got location: ", loc);
-      setLocation(loc);
+      setLocation({lat: loc.coords.latitude, long: loc.coords.longitude});
     })();
   }, []);
 
   const getUser = async () => {
     try {
       let user = await AsyncStorage.getItem('username');
-      if(user) setUsername(user);
+      if (user) setUsername(user);
     } catch (e) {
       // error reading value
     }
@@ -130,6 +136,7 @@ export const createListing = ({ navigation }: any) => {
   useEffect(() => {
     getUser();
   }, []);
+
 
   return (
     <Fragment>
@@ -142,9 +149,8 @@ export const createListing = ({ navigation }: any) => {
           <View style={styles.container_header}>
             <Text style={styles.title_header}>Create Listing</Text>
           </View>
-
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={{ justifyContent: "flex-end", flex: 1, alignItems: "center", backgroundColor: colors.dark }}>
+            <ScrollView contentContainerStyle={{ justifyContent: "flex-end", flexGrow: 1, alignItems: "center", backgroundColor: colors.dark, flexDirection: 'column' }}>
               <TouchableOpacity
                 style={[touchable_styles.imageSelector]}
                 onPress={() => pickImage(setImage, setImageName)}
@@ -162,21 +168,6 @@ export const createListing = ({ navigation }: any) => {
                   </Fragment>
                 }
               </TouchableOpacity>
-              {location?
-              <MapView style={{width:'100%', height:'100%'}}
-                  initialRegion={{
-                  latitude: location.coords.latitude-0.05,
-                  longitude: location.coords.longitude,
-                  latitudeDelta: 0.05,
-                  longitudeDelta: 0.05,
-                }}
-              >
-              <Marker draggable
-                coordinate={{latitude: location.coords.latitude, longitude: location.coords.longitude}}
-                onDragEnd={(e) => {}}
-              />
-              </MapView>
-              :null}
               <TextInput
                 style={styles.input}
                 onChangeText={setBookTitle}
@@ -206,23 +197,61 @@ export const createListing = ({ navigation }: any) => {
                 autoCapitalize="none"
               />
               <TextInput
-                style={styles.tallInput}
+                style={[styles.tallInput, {}]}
                 onChangeText={setDescription}
                 placeholder="Decscription"
                 autoCapitalize="none"
                 multiline={true}
               />
+              <View style={touchable_styles.mapHolder}>
+                {location && (Platform.OS === 'ios' || Platform.OS === 'android') ?
+                <Fragment>
+                <Text style={[touchable_styles.lightText,{marginBottom: 5}]}>Select Approximate Location</Text>
+                  <MapView style={{ width: '100%', height: '100%' }}
+                    initialRegion={{
+                      latitude: location.lat + 0.001,
+                      longitude: location.long,
+                      latitudeDelta: 0.015,
+                      longitudeDelta: 0.015,
+                    }}
+                    onMapReady={() => setMapReady(true)}
+                    onPress={(e) => {
+                      setLocation({lat: e.nativeEvent.coordinate.latitude, long: e.nativeEvent.coordinate.longitude})
+                    }}
+                  >
+                    <Marker draggable
+                      coordinate={{ latitude: location.lat, longitude: location.long }}
+                      onDragEnd={(e) => { setLocation({lat: e.nativeEvent.coordinate.latitude, long: e.nativeEvent.coordinate.longitude}) }}
+                      image={require('../assets/images/mapMarker.png')}
+                    />
+                  </MapView>
+                  </Fragment>
+                  : null
+                }
+                {!mapReady ?
+                <View style={{alignItems:'center'}}>
+                  <ActivityIndicator size="large" color='#fefefe' />
+                  <Text style={{color:'#fefefe'}}>Loading Map</Text>
+                  </View>
+                  : null
+                }
+              </View>
               <TouchableOpacity //upload button
                 style={[touchable_styles.wideButtonLight, { marginTop: 15 }]}
                 onPress={() => handleUploadPhoto(SelectedImage, setStatus, imageName).then(() => {
-                  let newPost: post = { course: classCode, imageName: imageName, title: bookTitle, price: price, description: description, school: school, user: username }
+                  if(location){
+                    var newPost: post = { course: classCode, imageName: imageName, title: bookTitle, price: price, description: description, school: school, user: username, location: location }
+                  }else{
+                    //idealy this neverhappens, otherwise someone ends up on null island
+                    var newPost: post = { course: classCode, imageName: imageName, title: bookTitle, price: price, description: description, school: school, user: username, location: {lat: 0, long: 0} }
+                  }
                   uploadPost(newPost, navigation)
                 }
                 )}
               >
                 <Text style={touchable_styles.darkText}>Upload</Text>
               </TouchableOpacity>
-            </View>
+            </ScrollView>
           </TouchableWithoutFeedback>
         </SafeAreaView>
       </KeyboardAvoidingView>

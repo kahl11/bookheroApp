@@ -59,7 +59,7 @@ export const editAccount = ({ route, navigation }) => {
             <View style={styles.container_horizontal_middle}>
                 <View style={styles.row}>
                     <TouchableOpacity
-                        style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
+                        style={[touchable_styles.halfButtonLight]}
                         onPress={() =>
                             navigation.navigate('account')
                         }
@@ -67,7 +67,7 @@ export const editAccount = ({ route, navigation }) => {
                         <Text style={touchable_styles.lightText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
+                        style={[touchable_styles.halfButtonLight]}
                         onPress={() =>
                             navigation.navigate('account')
                         }

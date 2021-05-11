@@ -1,4 +1,4 @@
-import { Rubik_400Regular } from '@expo-google-fonts/rubik';
+import { Rubik_400Regular, Rubik_500Medium } from '@expo-google-fonts/rubik';
 import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback } from "react-native";
 import { block, color } from 'react-native-reanimated';
@@ -45,12 +45,6 @@ export const touchable_styles = StyleSheet.create({
         shadowColor: shadowColor,
         shadowOpacity: shadowOpacity,
     },
-    heroLogin: {
-        backgroundColor: colors.accent
-    },
-    customerLogin: {
-        backgroundColor: colors.accent
-    },
     register: {
         width: "80%",
         backgroundColor: colors.dark
@@ -68,8 +62,9 @@ export const touchable_styles = StyleSheet.create({
         textTransform: "uppercase",
         fontSize: 12,
         textAlign: "center",
+        fontFamily: 'Rubik_Rubik_500Medium'
     },
-    loginButton: {
+    halfButtonLight: {
         marginLeft: "2%",
         marginRight: "2%",
         width: "38%",
@@ -81,8 +76,9 @@ export const touchable_styles = StyleSheet.create({
         shadowOffset: { height: shadowHeight, width: shadowWidth },
         shadowColor: shadowColor,
         shadowOpacity: shadowOpacity,
+        backgroundColor: colors.main
     },
-    registerButton: {
+    halfButtonDark: {
         marginLeft: "2%",
         marginRight: "2%",
         width: "38%",
@@ -94,6 +90,7 @@ export const touchable_styles = StyleSheet.create({
         shadowOffset: { height: 5, width: 0 },
         shadowColor: 'black',
         shadowOpacity: 0.3,
+        backgroundColor: colors.accent
     },
     login: {
         backgroundColor: colors.background_dark,
@@ -103,7 +100,6 @@ export const touchable_styles = StyleSheet.create({
         textAlign: "center",
         alignItems: "center",
         borderRadius: 5,
-
     },
     imageSelector: {
         justifyContent: 'center',
@@ -160,5 +156,12 @@ export const touchable_styles = StyleSheet.create({
         textTransform: "uppercase",
         fontSize: 14,
         marginLeft: 20,
-    }
+    },
+    mapHolder:{
+        width: '80%',
+        height: 400,
+        marginTop: 15,
+        marginBottom: 20,
+        alignContent: 'center'
+    },
 });

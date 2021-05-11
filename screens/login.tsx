@@ -80,14 +80,14 @@ export const login = ({ route, navigation }: any) => {
               onSubmitEditing={login}
             />
             <TouchableOpacity
-              style={[touchable_styles.loginButton, touchable_styles.wideButtonLight]}
+              style={[touchable_styles.halfButtonLight, touchable_styles.wideButtonLight]}
               onPress={login}
             >
               <Text style={touchable_styles.darkText}>Login</Text>
             </TouchableOpacity>
             <View style={[styles.row, {marginBottom: 40}]}>
               <TouchableOpacity
-                style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
+                style={[touchable_styles.halfButtonLight]}
                 onPress={() =>
                   navigation.navigate('home')
                 }
@@ -95,7 +95,7 @@ export const login = ({ route, navigation }: any) => {
                 <Text style={touchable_styles.lightText}>Back</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[touchable_styles.loginButton, touchable_styles.heroLogin]}
+                style={[touchable_styles.halfButtonLight]}
                 onPress={() =>
                   navigation.navigate('register')
                 }

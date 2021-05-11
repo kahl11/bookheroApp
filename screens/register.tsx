@@ -135,13 +135,13 @@ export const register = ({ navigation }) => {
           </View> */}
             <View style={[styles.row, {marginBottom: 40}]}>
               <TouchableOpacity
-                style={[touchable_styles.registerButton, touchable_styles.customerLogin]}
+                style={[touchable_styles.registerButton]}
                 onPress={register}
               >
                 <Text style={touchable_styles.lightText}>Create</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[touchable_styles.registerButton, touchable_styles.heroLogin]}
+                style={[touchable_styles.registerButton]}
                 onPress={() =>
                   navigation.navigate('login')
                 }
