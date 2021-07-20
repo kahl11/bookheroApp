@@ -29,7 +29,7 @@
     "expo-updates": "~0.4.1",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
-    "react-native": "^0.64.0",
+    "react-native": "^0.62.3",
     "react-native-document-picker": "^5.0.2",
     "react-native-dotenv": "^2.5.3",
     "react-native-dropdown-picker": "^3.1.9",
