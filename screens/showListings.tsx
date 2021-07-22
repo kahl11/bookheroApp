@@ -39,7 +39,6 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
     } = useInfiniteQuery(
         ['posts', filter],
         async () => {
-            // console.log(`${ENDPOINT}/getPosts?page=${pageParam}`);
             const res = await axios.get(`${ENDPOINT}/getPosts?page=${pageParam}`);
             setPageParam(pageParam + 1);
             return res
@@ -69,11 +68,12 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
             { data.pages.map((page) => {
                 {
                     return (
-                        page.data.map((pageData) => {
+                        page.data.map((pageData: (string | number | Date)[]) => {
                             return (
                                 <TouchableOpacity style={touchable_styles.productRow}
                                     onPress={() => {
                                         navigation.navigate("individualListing");
+                                        setPostPage(pageData[0])
                                     }}
                                 >
                                     <View style={touchable_styles.productRowImageView}>

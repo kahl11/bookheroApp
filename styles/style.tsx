@@ -1,5 +1,5 @@
 import { Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { Rubik_400Regular } from '@expo-google-fonts/rubik';
+import { Rubik_400Regular, Rubik_500Medium } from '@expo-google-fonts/rubik';
 import React, { Component, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback } from "react-native";
 import { color } from 'react-native-reanimated';

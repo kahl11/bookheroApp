@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { login } from './screens/login';
 import { register } from './screens/register';
 import { home } from './screens/homescreen';
@@ -11,13 +11,16 @@ import { styles, colors } from './styles/style';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useEffect, useState, useContext } from 'react';
 import { useFonts, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { Rubik_400Regular } from '@expo-google-fonts/rubik';
+import { Rubik_400Regular, Rubik_500Medium } from '@expo-google-fonts/rubik';
 import AppLoading from 'expo-app-loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createStackNavigator } from '@react-navigation/stack';
 import { editAccount } from './screens/editAccount';
 import { PostPageContext } from './constants/context';
 import { individualListing } from './screens/individualListing'
+import { chat } from './screens/chat'
+
+const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 const AccountStack = createStackNavigator();
 const loginStack = createStackNavigator();
@@ -47,13 +50,71 @@ function LoginNavigator({ route }: any) {
 function ListingsNavigator() {
   const [postPage, setPostPage] = useState(0);
   return (
-    <PostPageContext.Provider value={{postPage,setPostPage}}>
-    <AccountStack.Navigator headerMode={"none"}>
-      <AccountStack.Screen name="showListing" component={showListing} />
-      <AccountStack.Screen name="createListing" component={createListing} />
-      <AccountStack.Screen name="individualListing" component={individualListing} />
-    </AccountStack.Navigator>
+    <PostPageContext.Provider value={{ postPage, setPostPage }}>
+      <AccountStack.Navigator headerMode={"none"}>
+        <AccountStack.Screen name="showListing" component={showListing} />
+        <AccountStack.Screen name="createListing" component={createListing} />
+        <AccountStack.Screen name="individualListing" component={individualListing} />
+      </AccountStack.Navigator>
     </PostPageContext.Provider>
+  );
+}
+
+function Tabs({ IsAuthed, setIsAuthed }: { IsAuthed: boolean, setIsAuthed: Function }) {
+  return (
+    <Tab.Navigator
+      activeColor={colors.main}
+      inactiveColor={colors.accent}
+      barStyle={{ backgroundColor: "#121212" }}
+      labeled={true}
+      shifting={false}
+    >
+      <Tab.Screen
+        name="home"
+        component={home}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="home" color={color} size={22} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="showListing"
+        component={ListingsNavigator}
+        options={{
+          tabBarLabel: "Listings",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="post" color={color} size={22} />
+          ),
+        }}
+      />
+      {!IsAuthed ? (
+        <Tab.Screen
+          name="login"
+          component={LoginNavigator}
+          initialParams={{ setIsAuthed: setIsAuthed }}
+          options={{
+            tabBarLabel: 'Login',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="account" color={color} size={22} />
+            ),
+          }}
+        />
+      ) :
+        <Tab.Screen
+          name="account"
+          component={AccountNavigator}
+          initialParams={{ setIsAuthed: setIsAuthed }}
+          options={{
+            tabBarLabel: 'Account',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="account" color={color} size={22} />
+            ),
+          }}
+        />
+      }
+    </Tab.Navigator>
   );
 }
 
@@ -73,7 +134,8 @@ const App = () => {
 
   let [fontsLoaded] = useFonts({
     Poppins_700Bold,
-    Rubik_400Regular
+    Rubik_400Regular,
+    Rubik_500Medium
   });
 
   if (!fontsLoaded) {
@@ -81,59 +143,19 @@ const App = () => {
   }
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        activeColor={colors.main}
-        inactiveColor={colors.accent}
-        barStyle={{ backgroundColor: "#121212" }}
-        labeled={true}
-        shifting={false}
+      <Stack.Navigator
+        headerMode={'none'}
       >
-        <Tab.Screen
-          name="home"
-          component={home}
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="home" color={color} size={22} />
-            ),
-          }}
+        <Stack.Screen
+          name={"mainStack"}
+          component={Tabs}
+          initialParams={{ IsAuthed: IsAuthed, setIsAuthed: setIsAuthed }}
         />
-        <Tab.Screen
-          name="showListing"
-          component={ListingsNavigator}
-          options={{
-            tabBarLabel: "Listings",
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="post" color={color} size={22} />
-            ),
-          }}
+        <Stack.Screen
+          name="chat"
+          component={chat}
         />
-        {!IsAuthed ? (
-          <Tab.Screen
-            name="login"
-            component={LoginNavigator}
-            initialParams={{ setIsAuthed: setIsAuthed }}
-            options={{
-              tabBarLabel: 'Login',
-              tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons name="account" color={color} size={22} />
-              ),
-            }}
-          />
-        ) :
-          <Tab.Screen
-            name="account"
-            component={AccountNavigator}
-            initialParams={{ setIsAuthed: setIsAuthed }}
-            options={{
-              tabBarLabel: 'Account',
-              tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons name="account" color={color} size={22} />
-              ),
-            }}
-          />
-        }
-      </Tab.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

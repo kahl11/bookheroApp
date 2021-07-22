@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostPageContext } from '../constants/context';
 import { locationType } from '../constants/Constants'
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
-import MapView, { Circle, Marker } from 'react-native-maps';
+import MapView, { Circle } from 'react-native-maps';
 import { TouchableButton } from '../constants/Components'
 
 const queryClient = new QueryClient({
@@ -28,8 +28,11 @@ function Listing({navigation}) {
   const [mapReady, setMapReady] = useState(false);
   const { isLoading, error, data, isFetching } = useQuery("repoData", () =>
     fetch(
-      `${ENDPOINT}/getIndividualPost?id=${PostContext.postPage}}}`
-    ).then((res) => res.json())
+      `${ENDPOINT}/getIndividualPost?id=${PostContext.postPage}`
+    ).then((res) => {
+      console.log(PostContext.postPage);
+      return res.json();
+    })
   );
 
   useEffect(() => {
@@ -40,7 +43,7 @@ function Listing({navigation}) {
     <ActivityIndicator size="large" color='#fefefe' />
   );
 
-  let location = JSON.parse(decodeURIComponent(data[9]));
+  var location = JSON.parse(decodeURIComponent(data[9]))
 
   return (
     <><View style={styles.container_header}>
@@ -71,7 +74,7 @@ function Listing({navigation}) {
           </Text>
         </View>
         <View style={[touchable_styles.mapHolder, { marginLeft: '10%' }]}>
-          {location && (Platform.OS === 'ios' || Platform.OS === 'android') ?
+          {location !== null && (Platform.OS === 'ios' || Platform.OS === 'android') ?
             <Fragment>
               <Text style={[touchable_styles.lightText, { marginBottom: 5 }]}>Approximate Location </Text>
               <MapView style={{ width: '100%', height: '100%' }}
