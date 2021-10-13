@@ -62,7 +62,7 @@ export const touchable_styles = StyleSheet.create({
         textTransform: "uppercase",
         fontSize: 12,
         textAlign: "center",
-        fontFamily: 'Rubik_Rubik_500Medium'
+        fontFamily: 'Rubik_500Medium'
     },
     halfButtonLight: {
         marginLeft: "2%",

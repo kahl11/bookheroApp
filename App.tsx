@@ -1,24 +1,24 @@
-import * as React from 'react';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
-import { login } from './screens/login';
-import { register } from './screens/register';
-import { home } from './screens/homescreen';
-import { account } from './screens/account';
-import { createListing } from './screens/createListing';
-import { showListing } from './screens/showListings';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { styles, colors } from './styles/style';
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useEffect, useState, useContext } from 'react';
-import { useFonts, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { Rubik_400Regular, Rubik_500Medium } from '@expo-google-fonts/rubik';
-import AppLoading from 'expo-app-loading';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createStackNavigator } from '@react-navigation/stack';
-import { editAccount } from './screens/editAccount';
-import { PostPageContext } from './constants/context';
-import { individualListing } from './screens/individualListing'
-import { chat } from './screens/chat'
+import * as React from "react";
+import { NavigationContainer, StackActions } from "@react-navigation/native";
+import { login } from "./screens/login";
+import { register } from "./screens/register";
+import { home } from "./screens/homescreen";
+import { account } from "./screens/account";
+import { createListing } from "./screens/createListing";
+import { showListing } from "./screens/showListings";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { styles, colors } from "./styles/style";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useEffect, useState, useContext } from "react";
+import { useFonts, Poppins_700Bold } from "@expo-google-fonts/poppins";
+import { Rubik_400Regular, Rubik_500Medium } from "@expo-google-fonts/rubik";
+import AppLoading from "expo-app-loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createStackNavigator } from "@react-navigation/stack";
+import { editAccount } from "./screens/editAccount";
+import { PostPageContext, authContext } from "./constants/context";
+import { individualListing } from "./screens/individualListing";
+import { chat } from "./screens/chat";
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -26,22 +26,28 @@ const AccountStack = createStackNavigator();
 const loginStack = createStackNavigator();
 const ListingsStack = createStackNavigator();
 
-
-function AccountNavigator({ route }: any) {
-  console.log(route.params.setIsAuthed)
+function AccountNavigator(setIsAuthed: Function) {
   return (
     <AccountStack.Navigator headerMode={"none"}>
-      <AccountStack.Screen name="account" component={account} initialParams={{ setIsAuthed: route.params.setIsAuthed }} />
+      <AccountStack.Screen
+        name="account"
+        component={account}
+        initialParams={{ setIsAuthed: setIsAuthed }}
+      />
       <AccountStack.Screen name="editAccount" component={editAccount} />
     </AccountStack.Navigator>
   );
 }
 
-function LoginNavigator({ route }: any) {
-  console.log(route.params.setIsAuthed)
+function LoginNavigator({ setIsAuthed }: any) {
+  // console.log(setIsAuthed)
   return (
     <AccountStack.Navigator headerMode={"none"}>
-      <AccountStack.Screen name="login" component={login} initialParams={{ setIsAuthed: route.params.setIsAuthed }} />
+      <AccountStack.Screen
+        name="login"
+        component={login}
+        initialParams={{ setIsAuthed: setIsAuthed }}
+      />
       <AccountStack.Screen name="register" component={register} />
     </AccountStack.Navigator>
   );
@@ -54,13 +60,17 @@ function ListingsNavigator() {
       <AccountStack.Navigator headerMode={"none"}>
         <AccountStack.Screen name="showListing" component={showListing} />
         <AccountStack.Screen name="createListing" component={createListing} />
-        <AccountStack.Screen name="individualListing" component={individualListing} />
+        <AccountStack.Screen
+          name="individualListing"
+          component={individualListing}
+        />
       </AccountStack.Navigator>
     </PostPageContext.Provider>
   );
 }
 
-function Tabs({ IsAuthed, setIsAuthed }: { IsAuthed: boolean, setIsAuthed: Function }) {
+function Tabs() {
+  const {authenticated} = useContext(authContext);
   return (
     <Tab.Navigator
       activeColor={colors.main}
@@ -73,7 +83,7 @@ function Tabs({ IsAuthed, setIsAuthed }: { IsAuthed: boolean, setIsAuthed: Funct
         name="home"
         component={home}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: "Home",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="home" color={color} size={22} />
           ),
@@ -89,45 +99,44 @@ function Tabs({ IsAuthed, setIsAuthed }: { IsAuthed: boolean, setIsAuthed: Funct
           ),
         }}
       />
-      {!IsAuthed ? (
+      {!authenticated ? (
         <Tab.Screen
           name="login"
           component={LoginNavigator}
-          initialParams={{ setIsAuthed: setIsAuthed }}
           options={{
-            tabBarLabel: 'Login',
+            tabBarLabel: "Login",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="account" color={color} size={22} />
             ),
           }}
         />
-      ) :
+      ) : (
         <Tab.Screen
           name="account"
           component={AccountNavigator}
-          initialParams={{ setIsAuthed: setIsAuthed }}
           options={{
-            tabBarLabel: 'Account',
+            tabBarLabel: "Account",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="account" color={color} size={22} />
             ),
           }}
         />
-      }
+      )}
     </Tab.Navigator>
   );
 }
 
 const App = () => {
-  const [IsAuthed, setIsAuthed] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+
   const getData = async () => {
     try {
-      let token = await AsyncStorage.getItem('userToken');
-      if (token) setIsAuthed(true);
+      let token = await AsyncStorage.getItem("userToken");
+      if (token) setAuthenticated(true);
     } catch (e) {
       // error reading value
     }
-  }
+  };
   useEffect(() => {
     getData();
   }, []);
@@ -135,28 +144,21 @@ const App = () => {
   let [fontsLoaded] = useFonts({
     Poppins_700Bold,
     Rubik_400Regular,
-    Rubik_500Medium
+    Rubik_500Medium,
   });
 
   if (!fontsLoaded) {
     return <AppLoading />;
   }
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        headerMode={'none'}
-      >
-        <Stack.Screen
-          name={"mainStack"}
-          component={Tabs}
-          initialParams={{ IsAuthed: IsAuthed, setIsAuthed: setIsAuthed }}
-        />
-        <Stack.Screen
-          name="chat"
-          component={chat}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <authContext.Provider value={{ authenticated, setAuthenticated }}>
+      <NavigationContainer>
+        <Stack.Navigator headerMode={"none"}>
+          <Stack.Screen name={"mainStack"} component={Tabs} />
+          <Stack.Screen name="chat" component={chat} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </authContext.Provider>
   );
 };
 

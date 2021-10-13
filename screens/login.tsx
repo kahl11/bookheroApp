@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useContext, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal, Pressable, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { styles } from '../styles/style';
 import { touchable_styles } from '../styles/touchable_styles'
@@ -8,12 +8,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
 import { Fragment } from 'react';
 import { SafeAreaView } from 'react-native';
+import { authContext } from "../constants/context";
 
 
-export const login = ({ route, navigation }: any) => {
+export const login = ({navigation}:{ navigation: any}) => {
   const [status, setStatus] = useState('');
+  const { setAuthenticated } = useContext(authContext);
   const saveToken = async (token: string) => {
-    route.params.setIsAuthed(true)
+    setAuthenticated(true)
     console.log(token);
     try {
       await AsyncStorage.setItem('userToken', token);
@@ -109,7 +111,5 @@ export const login = ({ route, navigation }: any) => {
     </Fragment>
   );
 };
-function componentDidMount() {
-  throw new Error('Function not implemented.');
-}
+
 
