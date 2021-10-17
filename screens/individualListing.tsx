@@ -56,7 +56,7 @@ function Listing({navigation}) {
           style={{ width: windowWidth, height: windowWidth }}
         />
         <View style={{ flexDirection: 'row' }}>
-          <Text style={[styles.individualListingText, { fontSize: 64, textAlign: 'left', marginLeft: '10%', marginTop: 15, flex: 1 }]}>
+          <Text style={[styles.individualListingText, { fontSize: 50, textAlign: 'left', marginLeft: '10%', marginTop: 15, flex: 1 }]}>
             ${data[5]}
           </Text>
           <View>

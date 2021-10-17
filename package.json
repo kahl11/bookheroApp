@@ -25,6 +25,7 @@
     "expo-cli": "^4.4.4",
     "expo-crypto": "~9.1.0",
     "expo-font": "~9.1.0",
+    "expo-image-manipulator": "~9.1.0",
     "expo-image-picker": "~10.1.4",
     "expo-location": "~12.0.4",
     "expo-updates": "~0.5.4",

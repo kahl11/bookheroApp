@@ -1,31 +1,25 @@
 import React, { Component, useState, useEffect, useContext } from "react";
 import {
-  ImageBackground,
-  StyleSheet,
   Text,
   View,
   TextInput,
   TouchableOpacity,
-  Alert,
-  LogBox,
   Image,
   ScrollView,
 } from "react-native";
 import { styles } from "../styles/style";
 import { touchable_styles } from "../styles/touchable_styles";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { white } from "react-native-paper/lib/typescript/styles/colors";
 import { Fragment } from "react";
 import { SafeAreaView } from "react-native";
 import { ENDPOINT } from "@env";
+import { pageParam } from "../constants/context";
 import {
   useInfiniteQuery,
   QueryClient,
   QueryClientProvider,
 } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { isLoaded, isLoading } from "expo-font";
 import { PostPageContext } from "../constants/context";
+import Resizer from "react-image-file-resizer";
 const axios = require("axios").default;
 
 const queryClient = new QueryClient({
@@ -38,8 +32,8 @@ const queryClient = new QueryClient({
 
 const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
   const [height, setHeight] = useState(0);
-  const [pageParam, setPageParam] = useState(0);
   const [endOfpages, setEndOfPages] = useState(0);
+  const {page, setPage} = useContext(pageParam);
   const {
     status,
     data,
@@ -54,8 +48,9 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
   } = useInfiniteQuery(
     ["posts", filter],
     async () => {
-      const res = await axios.get(`${ENDPOINT}/getPosts?page=${pageParam}`);
-      setPageParam(pageParam + 1);
+      const res = await axios.get(`${ENDPOINT}/getPosts?page=${page}`);
+      setPage(page + 1);
+      console.log(page);
       return res;
     },
     {
@@ -63,6 +58,10 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
       getNextPageParam: (lastPage) => false,
     }
   );
+  useEffect(() => {
+    console.log('page');
+    setPage(0);
+  },[page]);
   return status === "loading" ? (
     <Text>Loading...</Text>
   ) : status === "error" ? (
@@ -75,7 +74,7 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
         if (
           e.nativeEvent.contentOffset.y / (height - 500) > 0.8 &&
           !isFetching &&
-          pageParam <= maxPages
+          page <= maxPages
         ) {
           fetchNextPage();
         }

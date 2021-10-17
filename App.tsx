@@ -16,7 +16,7 @@ import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { editAccount } from "./screens/editAccount";
-import { PostPageContext, authContext } from "./constants/context";
+import { PostPageContext, authContext, pageParam } from "./constants/context";
 import { individualListing } from "./screens/individualListing";
 import { chat } from "./screens/chat";
 
@@ -70,7 +70,7 @@ function ListingsNavigator() {
 }
 
 function Tabs() {
-  const {authenticated} = useContext(authContext);
+  const { authenticated } = useContext(authContext);
   return (
     <Tab.Navigator
       activeColor={colors.main}
@@ -128,6 +128,7 @@ function Tabs() {
 
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [page, setPage] = useState(0); //used for the listings, we need to refresh this when we add a new listing
 
   const getData = async () => {
     try {
@@ -152,12 +153,12 @@ const App = () => {
   }
   return (
     <authContext.Provider value={{ authenticated, setAuthenticated }}>
-      <NavigationContainer>
-        <Stack.Navigator headerMode={"none"}>
-          <Stack.Screen name={"mainStack"} component={Tabs} />
-          <Stack.Screen name="chat" component={chat} />
-        </Stack.Navigator>
-      </NavigationContainer>
+        <NavigationContainer>
+          <Stack.Navigator headerMode={"none"}>
+            <Stack.Screen name="chat" component={chat} />
+            <Stack.Screen name={"mainStack"} component={Tabs} />
+          </Stack.Navigator>
+        </NavigationContainer>
     </authContext.Provider>
   );
 };
