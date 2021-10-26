@@ -153,12 +153,12 @@ const App = () => {
   }
   return (
     <authContext.Provider value={{ authenticated, setAuthenticated }}>
-        <NavigationContainer>
-          <Stack.Navigator headerMode={"none"}>
-            <Stack.Screen name="chat" component={chat} />
-            <Stack.Screen name={"mainStack"} component={Tabs} />
-          </Stack.Navigator>
-        </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator headerMode={"none"}>
+          <Stack.Screen name={"mainStack"} component={Tabs} />
+          <Stack.Screen name="chat" component={chat} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </authContext.Provider>
   );
 };
