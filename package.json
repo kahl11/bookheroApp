@@ -28,6 +28,7 @@
     "expo-image-manipulator": "~9.1.0",
     "expo-image-picker": "~10.1.4",
     "expo-location": "~12.0.4",
+    "expo-notifications": "~0.11.6",
     "expo-updates": "~0.5.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

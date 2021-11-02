@@ -19,7 +19,7 @@ import {
   QueryClientProvider,
 } from "react-query";
 import { PostPageContext } from "../constants/context";
-import Resizer from "react-image-file-resizer";
+
 const axios = require("axios").default;
 
 const queryClient = new QueryClient({
@@ -33,7 +33,7 @@ const queryClient = new QueryClient({
 const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
   const [height, setHeight] = useState(0);
   const [endOfpages, setEndOfPages] = useState(0);
-  const {page, setPage} = useContext(pageParam);
+    const {page, setPage} = useContext(pageParam);
   const {
     status,
     data,
@@ -48,9 +48,11 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
   } = useInfiniteQuery(
     ["posts", filter],
     async () => {
-      const res = await axios.get(`${ENDPOINT}/getPosts?page=${page}`);
+      let endpoint = filter
+        ? `${ENDPOINT}/getPosts?page=${page}&q=${filter}`
+        : `${ENDPOINT}/getPosts?page=${page}`;
+      const res = await axios.get(endpoint);
       setPage(page + 1);
-      console.log(page);
       return res;
     },
     {
@@ -59,9 +61,8 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
     }
   );
   useEffect(() => {
-    console.log('page');
     setPage(0);
-  },[page]);
+  }, [page]);
   return status === "loading" ? (
     <Text>Loading...</Text>
   ) : status === "error" ? (
@@ -142,9 +143,9 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
 
 export const showListing = ({ navigation }) => {
   let { postPage, setPostPage } = useContext(PostPageContext);
-  const [filter, setFilter] = useState(0);
+  const [filter, setFilter] = useState("");
   const [maxPages, setMaxPages] = useState<number | null>(null);
-
+  const [searchParam, setSearchParam] = useState("");
   const getNumPages = async () => {
     let mp = await axios.get(`${ENDPOINT}/getNumPostPages`);
     setMaxPages(mp.data);
@@ -161,7 +162,7 @@ export const showListing = ({ navigation }) => {
           <View style={[styles.row, { marginTop: 25 }]}>
             <TouchableOpacity
               style={[touchable_styles.halfButtonDark]}
-              onPress={() => setFilter(filter + 1)}
+              onPress={() => {}}
             >
               <Text style={touchable_styles.lightText}>Filter</Text>
             </TouchableOpacity>
@@ -177,6 +178,11 @@ export const showListing = ({ navigation }) => {
           <TextInput
             style={[styles.input, { marginBottom: 10 }]}
             placeholder="Search"
+            onChangeText={setSearchParam}
+            onSubmitEditing={(val) => {
+              setPostPage(0);
+              setFilter(searchParam);
+            }}
           />
         </View>
         <QueryClientProvider client={queryClient}>

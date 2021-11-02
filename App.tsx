@@ -9,22 +9,36 @@ import { showListing } from "./screens/showListings";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { styles, colors } from "./styles/style";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useFonts, Poppins_700Bold } from "@expo-google-fonts/poppins";
 import { Rubik_400Regular, Rubik_500Medium } from "@expo-google-fonts/rubik";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { editAccount } from "./screens/editAccount";
-import { PostPageContext, authContext, pageParam } from "./constants/context";
+import { PostPageContext, authContext, chatContext } from "./constants/context";
 import { individualListing } from "./screens/individualListing";
 import { chat } from "./screens/chat";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+import { Subscription } from "@unimodules/react-native-adapter";
+import { Notification } from "expo-notifications";
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 const AccountStack = createStackNavigator();
 const loginStack = createStackNavigator();
 const ListingsStack = createStackNavigator();
+const chatStack = createStackNavigator();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 function AccountNavigator(setIsAuthed: Function) {
   return (
@@ -50,6 +64,14 @@ function LoginNavigator({ setIsAuthed }: any) {
       />
       <AccountStack.Screen name="register" component={register} />
     </AccountStack.Navigator>
+  );
+}
+
+function chatNavigator() {
+  return (
+    <chatStack.Navigator headerMode={"none"}>
+      <chatStack.Screen name="chat" component={chat} />
+    </chatStack.Navigator>
   );
 }
 
@@ -111,16 +133,32 @@ function Tabs() {
           }}
         />
       ) : (
-        <Tab.Screen
-          name="account"
-          component={AccountNavigator}
-          options={{
-            tabBarLabel: "Account",
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="account" color={color} size={22} />
-            ),
-          }}
-        />
+        <>
+          <Tab.Screen
+            name="chat"
+            component={chatNavigator}
+            options={{
+              tabBarLabel: "Chats",
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons name="chat" color={color} size={22} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="account"
+            component={AccountNavigator}
+            options={{
+              tabBarLabel: "Account",
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="account"
+                  color={color}
+                  size={22}
+                />
+              ),
+            }}
+          />
+        </>
       )}
     </Tab.Navigator>
   );
@@ -128,8 +166,13 @@ function Tabs() {
 
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
-  const [page, setPage] = useState(0); //used for the listings, we need to refresh this when we add a new listing
-
+  const [chatId, setChatId] = useState("");
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState<Notification | boolean>(
+    false
+  );
+  const notificationListener = useRef<Subscription>();
+  const responseListener = useRef<Subscription>();
   const getData = async () => {
     try {
       let token = await AsyncStorage.getItem("userToken");
@@ -138,6 +181,42 @@ const App = () => {
       // error reading value
     }
   };
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((expo_token) => {
+      if (expo_token){
+        setExpoPushToken(expo_token);
+        console.log('token',expo_token);
+      }
+    });
+
+    if (notificationListener) {
+      // This listener is fired whenever a notification is received while the app is foregrounded
+      notificationListener.current =
+        Notifications.addNotificationReceivedListener((notification) => {
+          setNotification(notification);
+        });
+
+      // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+      responseListener.current =
+        Notifications.addNotificationResponseReceivedListener((response) => {
+          console.log(response);
+        });
+
+      return () => {
+        if (notificationListener.current) {
+          Notifications.removeNotificationSubscription(
+            notificationListener.current
+          );
+        }
+        if (responseListener.current) {
+          Notifications.removeNotificationSubscription(
+            responseListener.current
+          );
+        }
+      };
+    }
+  }, []);
+
   useEffect(() => {
     getData();
   }, []);
@@ -153,14 +232,68 @@ const App = () => {
   }
   return (
     <authContext.Provider value={{ authenticated, setAuthenticated }}>
-      <NavigationContainer>
-        <Stack.Navigator headerMode={"none"}>
-          <Stack.Screen name={"mainStack"} component={Tabs} />
-          <Stack.Screen name="chat" component={chat} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <chatContext.Provider value={{ chatId, setChatId }}>
+        <NavigationContainer>
+          <Stack.Navigator headerMode={"none"}>
+            <Stack.Screen name={"mainStack"} component={Tabs} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </chatContext.Provider>
     </authContext.Provider>
   );
 };
+
+// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.dev/notifications
+async function sendPushNotification(expoPushToken: any) {
+  const message = {
+    to: expoPushToken,
+    sound: "default",
+    title: "Original Title",
+    body: "And here is the body!",
+    data: { someData: "goes here" },
+  };
+
+  await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Accept-encoding": "gzip, deflate",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Constants.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert("Must use physical device for Push Notifications");
+  }
+
+  if (Platform.OS === "android") {
+    Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  return token;
+}
 
 export default App;

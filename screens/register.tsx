@@ -19,7 +19,6 @@ export const register = ({ navigation }) => {
 
   const register = () => {
     if (email != emailConfirm) {
-      console.log(email, emailConfirm);
       setStatus("Emails are not the same");
       return;
     }
@@ -135,13 +134,13 @@ export const register = ({ navigation }) => {
           </View> */}
             <View style={[styles.row, {marginBottom: 40}]}>
               <TouchableOpacity
-                style={[touchable_styles.registerButton]}
+                style={[touchable_styles.halfButtonLight]}
                 onPress={register}
               >
                 <Text style={touchable_styles.lightText}>Create</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[touchable_styles.registerButton]}
+                style={[touchable_styles.halfButtonDark]}
                 onPress={() =>
                   navigation.navigate('login')
                 }

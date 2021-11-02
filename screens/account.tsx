@@ -20,42 +20,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fragment } from "react";
 import { SafeAreaView } from "react-native";
 import { authContext } from "../constants/context";
+import { getUserData } from "../js/getUserData";
 
-export const account = ({navigation}:{navigation:any}) => {
+export const account = ({ navigation }: { navigation: any }) => {
   const [username, setUsername] = useState("");
   const [school, setSchool] = useState("");
   const { setAuthenticated } = useContext(authContext);
   const [UserToken, setUserToken] = useState("");
   const getData = async () => {
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      if (token !== null) {
-        setUserToken(token);
-        if (username == "") {
-          fetch(`${ENDPOINT}/getUserData`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token: token,
-            }),
-          })
-            .then((response) => response.json())
-            .then((json) => {
-              setUsername(json.username);
-              setSchool(json.school);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
-      } else {
-        console.log("token was nu");
-      }
-    } catch (e) {
-      // error reading value
+    let data = await getUserData();
+    console.log(data)
+    if (data) {
+      setSchool(data.school);
+      setUsername(data.username);
     }
   };
   getData();

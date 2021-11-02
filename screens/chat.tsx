@@ -1,4 +1,10 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -9,25 +15,27 @@ import {
 import { styles } from "../styles/style";
 import { TouchableButton } from "../constants/Components";
 import { touchable_styles } from "../styles/touchable_styles";
-
+import { chatContext } from "../constants/context";
+import { getUserData } from "../js/getUserData";
 var client: null | WebSocket = null;
 export const chat = () => {
-  const [myID, setMyID] = useState(1);
-  const [partnerID, setParterID] = useState(2);
   const [messages, setMessages] = useState<string[]>([]);
   const [sendText, setSendText] = useState<null | string>(null);
-
+  const [username, setUsername] = useState("");
+  let { chatId, setChatId } = useContext(chatContext);
   const messageRef = useRef({});
+
   messageRef.current = messages as string[];
 
-  const sendConnect = (myID: number, partnerID: number) => {
+  const sendConnect = async (partnerID: string) => {
+    let data = await getUserData();
     client = new WebSocket("ws://157.245.176.240:8020");
     client.onopen = () => {
       if (client)
         client.send(
           JSON.stringify({
             type: "CONNECTION",
-            message: { id: myID, partner: partnerID },
+            message: { id: data?.username, partner: partnerID },
           })
         );
     };
@@ -40,36 +48,22 @@ export const chat = () => {
         let messageObject = JSON.parse(message.data);
 
         if (messageObject.type === "MESSAGE") {
-          console.log(messageRef.current);
-          setMessages([...(messageRef.current as string[]), messageObject.message]);
+          setMessages([
+            ...(messageRef.current as string[]),
+            messageObject.message,
+          ]);
         }
       }
     };
   };
+
+  useEffect(() => {
+    sendConnect(chatId);
+  }, [chatId]);
   return (
     <Fragment>
       <SafeAreaView style={styles.background} />
       <SafeAreaView style={[styles.individualListingContainer, { flex: 1 }]}>
-        <TextInput
-          style={styles.input}
-          onChangeText={(value) => setMyID(parseInt(value))}
-          placeholder="Client ID"
-          keyboardType="numeric"
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={(value) => setParterID(parseInt(value))}
-          placeholder="Partner ID"
-          keyboardType="numeric"
-        />
-        <TouchableOpacity
-          style={[touchable_styles.halfButtonDark]}
-          onPress={() => {
-            sendConnect(myID, partnerID);
-          }}
-        >
-          <Text style={touchable_styles.lightText}>Connect</Text>
-        </TouchableOpacity>
         <TextInput
           style={styles.input}
           onChangeText={(value) => setSendText(value)}

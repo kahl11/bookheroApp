@@ -11,3 +11,9 @@ export const pageParam = React.createContext({
   page: 0,
   setPage: (page: number) => {},
 });
+
+
+export const chatContext = React.createContext({
+  chatId: "",
+  setChatId: (chatId: string) => {},
+});
