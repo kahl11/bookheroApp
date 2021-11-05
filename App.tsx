@@ -175,19 +175,21 @@ const App = () => {
   const responseListener = useRef<Subscription>();
   const getData = async () => {
     try {
-      let token = await AsyncStorage.getItem("userToken");
-      if (token) setAuthenticated(true);
+      let user_token = await AsyncStorage.getItem("userToken");
+      if (user_token) setAuthenticated(true);
+      let expo_token = await AsyncStorage.getItem("expo_token");
+      if (expo_token) setExpoPushToken(expo_token);
     } catch (e) {
       // error reading value
     }
   };
   useEffect(() => {
-    registerForPushNotificationsAsync().then((expo_token) => {
-      if (expo_token){
-        setExpoPushToken(expo_token);
-        console.log('token',expo_token);
-      }
-    });
+    if (!expoPushToken)
+      registerForPushNotificationsAsync().then((expo_token) => {
+        if (expo_token) {
+          setExpoPushToken(expo_token);
+        }
+      });
 
     if (notificationListener) {
       // This listener is fired whenever a notification is received while the app is foregrounded
@@ -243,27 +245,6 @@ const App = () => {
   );
 };
 
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.dev/notifications
-async function sendPushNotification(expoPushToken: any) {
-  const message = {
-    to: expoPushToken,
-    sound: "default",
-    title: "Original Title",
-    body: "And here is the body!",
-    data: { someData: "goes here" },
-  };
-
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
-}
-
 async function registerForPushNotificationsAsync() {
   let token;
   if (Constants.isDevice) {
@@ -275,13 +256,13 @@ async function registerForPushNotificationsAsync() {
       finalStatus = status;
     }
     if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
+      console.log("Failed to get push token for push notification!");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
+    await AsyncStorage.setItem('expo_token', token); 
   } else {
-    alert("Must use physical device for Push Notifications");
+    console.log("Must use physical device for Push Notifications");
   }
 
   if (Platform.OS === "android") {
