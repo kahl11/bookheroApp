@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { Fragment } from "react";
 import { SafeAreaView } from "react-native";
 import { authContext } from "../constants/context";
+const axios = require("axios").default;
 
 export const login = ({ navigation }: { navigation: any }) => {
   const [status, setStatus] = useState("");
@@ -30,6 +31,14 @@ export const login = ({ navigation }: { navigation: any }) => {
     try {
       await AsyncStorage.setItem("userToken", token);
       await AsyncStorage.setItem("username", username);
+      await AsyncStorage.getItem("expo_token").then((expo_token) => {
+        if (expo_token) {
+          axios.post(`${ENDPOINT}/setExpoToken`, {
+            user_token: token,
+            expo_token: expo_token,
+          });
+        }
+      });
     } catch (error) {
       // Error retrieving data
       console.log(error.message);

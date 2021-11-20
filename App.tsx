@@ -273,7 +273,6 @@ async function registerForPushNotificationsAsync() {
       lightColor: "#FF231F7C",
     });
   }
-
   return token;
 }
 
