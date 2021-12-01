@@ -11,24 +11,33 @@ import {
   SafeAreaView,
   TouchableOpacity,
   TextInput,
+  ListView,
 } from "react-native";
 import { styles } from "../styles/style";
 import { TouchableButton } from "../constants/Components";
 import { touchable_styles } from "../styles/touchable_styles";
 import { chatContext } from "../constants/context";
 import { getUserData } from "../js/getUserData";
+import { ENDPOINT } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getMessages } from "../js/MessageHelpers";
+import { ScrollView } from "react-native-gesture-handler";
+
 var client: null | WebSocket = null;
+const axios = require("axios").default;
+
 export const chat = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [sendText, setSendText] = useState<null | string>(null);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState<undefined | string>("");
   let { chatId, setChatId } = useContext(chatContext);
   const messageRef = useRef({});
 
-  messageRef.current = messages as string[];
+  messageRef.current = messages as any[];
 
   const sendConnect = async (partnerID: string) => {
     let data = await getUserData();
+    setUsername(data?.username);
     client = new WebSocket("ws://157.245.176.240:8020");
     client.onopen = () => {
       if (client)
@@ -46,11 +55,10 @@ export const chat = () => {
       console.log("MESSAGE: ", message);
       if (message.data !== "Connected") {
         let messageObject = JSON.parse(message.data);
-
         if (messageObject.type === "MESSAGE") {
           setMessages([
-            ...(messageRef.current as string[]),
-            messageObject.message,
+            ...(messageRef.current as any[]),
+            { message: messageObject.message, postion: "received" },
           ]);
         }
       }
@@ -59,6 +67,20 @@ export const chat = () => {
 
   useEffect(() => {
     sendConnect(chatId);
+    getMessages().then(() => {
+      AsyncStorage.getItem("messages").then((m) => {
+        if (m) {
+          m = JSON.parse(m);
+          //@ts-ignore
+          for (let i of m[chatId]) {
+            setMessages([
+              ...(messageRef.current as any[]),
+              { message: i[0], position: i[1] == chatId ? "sent" : "received" },
+            ]);
+          }
+        }
+      });
+    });
   }, [chatId]);
   return (
     <Fragment>
@@ -72,6 +94,13 @@ export const chat = () => {
         <TouchableOpacity
           style={[touchable_styles.halfButtonDark]}
           onPress={() => {
+            axios.post(`${ENDPOINT}/postMessage`, {
+              sender: username,
+              receiver: chatId,
+              message: sendText,
+            });
+            if (sendText)
+              setMessages([...(messageRef.current as any[]), {message: sendText, position: 'sent'}]);
             if (client) {
               client.send(
                 JSON.stringify({
@@ -86,13 +115,18 @@ export const chat = () => {
         >
           <Text style={touchable_styles.lightText}>Send</Text>
         </TouchableOpacity>
-        {messages.map((message, index) => {
-          return (
-            <Text style={styles.text_white} key={index}>
-              {message}
-            </Text>
-          );
-        })}
+        <ScrollView>
+          {messages.map((message: any, index) => {
+            console.log('message: ', message);
+            return (
+              <View style={message.position == 'sent'? styles.messageSent : styles.messageReceived}>
+                <Text style={styles.text_white} key={index}>
+                  {message.message}
+                </Text>
+              </View>
+            );
+          })}
+        </ScrollView>
       </SafeAreaView>
     </Fragment>
   );

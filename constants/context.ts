@@ -16,4 +16,5 @@ export const pageParam = React.createContext({
 export const chatContext = React.createContext({
   chatId: "",
   setChatId: (chatId: string) => {},
+  socket: <null|WebSocket>null
 });

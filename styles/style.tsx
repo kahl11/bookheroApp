@@ -6,6 +6,7 @@ import { color } from 'react-native-reanimated';
 
 export const colors = {
   background_dark: "#121212",
+  background_grey: '#171717',
   dark: "#212121",
   main: "#bbf299",
   accent: "#007366",
@@ -195,5 +196,39 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'center',
     minHeight: 40
+  },
+  chatListElement:{
+    width: '100%',
+    padding: 10,
+    height:70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: colors.background_dark,
+    borderBottomWidth: 2,
+    backgroundColor: colors.background_grey
+  },
+  avatar:{
+    width:50,
+    height:50,
+    borderRadius: 100,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  avatarText: {
+    fontSize: 20,
+    fontWeight: '600'
+  },
+  messageReceived: {
+    width: '100%',
+    alignItems: 'flex-end',
+    paddingRight: 10,
+    height: 50
+  },
+  messageSent: {
+    width: '100%',
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+    height: 30
   }
 });

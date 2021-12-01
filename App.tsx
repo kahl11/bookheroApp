@@ -18,12 +18,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { editAccount } from "./screens/editAccount";
 import { PostPageContext, authContext, chatContext } from "./constants/context";
 import { individualListing } from "./screens/individualListing";
+import { chatLanding } from "./screens/chatLanding";
 import { chat } from "./screens/chat";
+import { ENDPOINT } from "@env";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { Subscription } from "@unimodules/react-native-adapter";
 import { Notification } from "expo-notifications";
+import { getMessages } from "./js/MessageHelpers";
+const axios = require("axios").default;
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -70,6 +74,7 @@ function LoginNavigator({ setIsAuthed }: any) {
 function chatNavigator() {
   return (
     <chatStack.Navigator headerMode={"none"}>
+      <chatStack.Screen name="chatLanding" component={chatLanding} />
       <chatStack.Screen name="chat" component={chat} />
     </chatStack.Navigator>
   );
@@ -167,7 +172,7 @@ function Tabs() {
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [chatId, setChatId] = useState("");
-  const [expoPushToken, setExpoPushToken] = useState("");
+  const [userToken, setUserToken] = useState("");
   const [notification, setNotification] = useState<Notification | boolean>(
     false
   );
@@ -176,32 +181,36 @@ const App = () => {
   const getData = async () => {
     try {
       let user_token = await AsyncStorage.getItem("userToken");
-      if (user_token) setAuthenticated(true);
-      let expo_token = await AsyncStorage.getItem("expo_token");
-      if (expo_token) setExpoPushToken(expo_token);
+      if (user_token) {
+        setAuthenticated(true);
+        setUserToken(user_token);
+      }
     } catch (e) {
       // error reading value
     }
   };
   useEffect(() => {
-    if (!expoPushToken)
-      registerForPushNotificationsAsync().then((expo_token) => {
-        if (expo_token) {
-          setExpoPushToken(expo_token);
-        }
+    getData();
+    getMessages();
+    registerForPushNotificationsAsync().then((expo_token) => {
+      if (expo_token) AsyncStorage.setItem("expo_token", expo_token);
+      axios.post(`${ENDPOINT}/setExpoToken`, {
+        user_token: userToken,
+        expo_token: expo_token,
       });
+    });
 
     if (notificationListener) {
       // This listener is fired whenever a notification is received while the app is foregrounded
       notificationListener.current =
         Notifications.addNotificationReceivedListener((notification) => {
+          getMessages();
           setNotification(notification);
         });
 
       // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
       responseListener.current =
         Notifications.addNotificationResponseReceivedListener((response) => {
-          console.log(response);
         });
 
       return () => {
@@ -217,10 +226,6 @@ const App = () => {
         }
       };
     }
-  }, []);
-
-  useEffect(() => {
-    getData();
   }, []);
 
   let [fontsLoaded] = useFonts({
@@ -256,11 +261,10 @@ async function registerForPushNotificationsAsync() {
       finalStatus = status;
     }
     if (finalStatus !== "granted") {
-      console.log("Failed to get push token for push notification!");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    await AsyncStorage.setItem('expo_token', token); 
+    await AsyncStorage.setItem("expo_token", token);
   } else {
     console.log("Must use physical device for Push Notifications");
   }
