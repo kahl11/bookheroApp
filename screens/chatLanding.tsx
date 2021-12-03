@@ -22,17 +22,51 @@ interface chat {
   user: string;
 }
 
-const ChatListElement = (props: { chatUser: string, navigation: any }) => {
+const ChatListElement = (props: {
+  chatUser: string;
+  navigation: any;
+  index: number;
+}) => {
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+  AsyncStorage.getItem("userToken").then((token) => {
+    console.log(
+      'get Message'
+    );
+    axios
+      .get(
+        `${ENDPOINT}/getMostRecentMessage?userToken=${token}&partner=${props.chatUser}`
+      )
+      .then((response: any) => {
+        setRecent(response.data);
+      });
+  });
+  },[])
+
   const { chatId, setChatId } = useContext(chatContext);
   return (
-    <TouchableOpacity key={props.index} style={styles.chatListElement} onPress={() => {
-      setChatId(props.chatUser);
-      props.navigation.navigate('chat')
-    }}>
+    <TouchableOpacity
+      key={props.index}
+      style={styles.chatListElement}
+      onPress={() => {
+        setChatId(props.chatUser);
+        props.navigation.navigate("chat");
+      }}
+    >
       <View style={styles.avatar}>
         <Text style={styles.avatarText}>{props.chatUser[0].toUpperCase()}</Text>
       </View>
-      <Text>{props.chatUser}</Text>
+      <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: "column", marginLeft: 20, flex: 1 }}>
+          <Text style={[styles.text_white, { fontSize: 20 }]}>
+            {props.chatUser}
+          </Text>
+          <Text style={[styles.text_white, {color: "#8f8f8f"}]}>{recent[0]}</Text>
+        </View>
+        <View style={{width: 100, marginRight: 50, paddingTop: 5}}>
+          <Text style={[styles.text_white, { fontSize: 12, color:"#8f8f8f" }]}>{recent[1]}</Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -42,8 +76,8 @@ export const chatLanding = ({ navigation }) => {
   const [chats, setChats] = useState([]);
   useEffect(() => {
     getMessages();
-    if(chatId){
-      navigation.navigate('chat');
+    if (chatId) {
+      navigation.navigate("chat");
     }
     AsyncStorage.getItem("userToken").then((token) => {
       axios
@@ -62,7 +96,14 @@ export const chatLanding = ({ navigation }) => {
         </View>
         <View>
           {chats.map((chat, index) => {
-            return <ChatListElement key={index} chatUser={chat} navigation={navigation} />;
+            return (
+              <ChatListElement
+                key={index}
+                chatUser={chat}
+                navigation={navigation}
+                index={index}
+              />
+            );
           })}
         </View>
       </SafeAreaView>

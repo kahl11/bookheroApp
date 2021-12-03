@@ -85,48 +85,79 @@ export const chat = () => {
   return (
     <Fragment>
       <SafeAreaView style={styles.background} />
-      <SafeAreaView style={[styles.individualListingContainer, { flex: 1 }]}>
-        <TextInput
-          style={styles.input}
-          onChangeText={(value) => setSendText(value)}
-          placeholder="Message"
-        />
-        <TouchableOpacity
-          style={[touchable_styles.halfButtonDark]}
-          onPress={() => {
-            axios.post(`${ENDPOINT}/postMessage`, {
-              sender: username,
-              receiver: chatId,
-              message: sendText,
-            });
-            if (sendText)
-              setMessages([...(messageRef.current as any[]), {message: sendText, position: 'sent'}]);
-            if (client) {
-              client.send(
-                JSON.stringify({
-                  type: "MESSAGE",
-                  message: sendText,
-                })
+      <SafeAreaView style={[styles.container]}>
+        <View style={[styles.container_header_row, {}]}>
+          <View style={[styles.avatar, { marginRight: 5, marginBottom: 10 }]}>
+            <Text style={[styles.avatarText]}>{chatId[0].toUpperCase()}</Text>
+          </View>
+          <Text style={[styles.title_header, { marginLeft: 5 }]}>{chatId}</Text>
+        </View>
+        <View style={[{ flexDirection: "column", height: "100%" }]}>
+          <ScrollView style={[{ flexGrow: 1 }]}>
+            {messages.map((message: any, index) => {
+              console.log("message: ", message);
+              return (
+                <View
+                key={index}
+                  style={
+                    message.position == "sent"
+                      ? styles.messageSent
+                      : styles.messageReceived
+                  }
+                >
+                  <TouchableOpacity style={styles.chatBubble}>
+                    <Text key={index}>{message.message}</Text>
+                    {message.position == "received" ? (
+                      <>
+                        <View style={styles.rightArrow}></View>
+                        <View style={styles.rightArrowOverlap}></View>
+                      </>
+                    ) : (
+                      <>
+                        <View style={styles.leftArrow}></View>
+                        <View style={styles.leftArrowOverlap}></View>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
               );
-            } else {
-              console.log("No client found");
-            }
-          }}
-        >
-          <Text style={touchable_styles.lightText}>Send</Text>
-        </TouchableOpacity>
-        <ScrollView>
-          {messages.map((message: any, index) => {
-            console.log('message: ', message);
-            return (
-              <View style={message.position == 'sent'? styles.messageSent : styles.messageReceived}>
-                <Text style={styles.text_white} key={index}>
-                  {message.message}
-                </Text>
-              </View>
-            );
-          })}
-        </ScrollView>
+            })}
+          </ScrollView>
+          <View style={[{height: "20%", flexDirection: "row"}]}>
+            <TextInput
+              style={[styles.input, {width: "75%", marginTop: 10, height: 50}]}
+              onChangeText={(value) => setSendText(value)}
+              placeholder="Message"
+            />
+            <TouchableOpacity
+              style={[touchable_styles.halfButtonDark, {width: "20%", marginTop: 10, height: 50, paddingTop: 18}]}
+              onPress={() => {
+                axios.post(`${ENDPOINT}/postMessage`, {
+                  sender: username,
+                  receiver: chatId,
+                  message: sendText,
+                });
+                if (sendText)
+                  setMessages([
+                    ...(messageRef.current as any[]),
+                    { message: sendText, position: "sent" },
+                  ]);
+                if (client) {
+                  client.send(
+                    JSON.stringify({
+                      type: "MESSAGE",
+                      message: sendText,
+                    })
+                  );
+                } else {
+                  console.log("No client found");
+                }
+              }}
+            >
+              <Text style={touchable_styles.lightText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </SafeAreaView>
     </Fragment>
   );
