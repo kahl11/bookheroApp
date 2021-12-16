@@ -29,19 +29,17 @@ const ChatListElement = (props: {
 }) => {
   const [recent, setRecent] = useState<string[]>([]);
   useEffect(() => {
-  AsyncStorage.getItem("userToken").then((token) => {
-    console.log(
-      'get Message'
-    );
-    axios
-      .get(
-        `${ENDPOINT}/getMostRecentMessage?userToken=${token}&partner=${props.chatUser}`
-      )
-      .then((response: any) => {
-        setRecent(response.data);
-      });
-  });
-  },[])
+    AsyncStorage.getItem("userToken").then((token) => {
+      console.log(token)
+      axios
+        .get(
+          `${ENDPOINT}/getMostRecentMessage?userToken=${token}&partner=${props.chatUser}`
+        )
+        .then((response: any) => {
+          setRecent(response.data);
+        });
+    });
+  }, []);
 
   const { chatId, setChatId } = useContext(chatContext);
   return (
@@ -56,15 +54,19 @@ const ChatListElement = (props: {
       <View style={styles.avatar}>
         <Text style={styles.avatarText}>{props.chatUser[0].toUpperCase()}</Text>
       </View>
-      <View style={{flexDirection: 'row'}}>
+      <View style={{ flexDirection: "row" }}>
         <View style={{ flexDirection: "column", marginLeft: 20, flex: 1 }}>
           <Text style={[styles.text_white, { fontSize: 20 }]}>
             {props.chatUser}
           </Text>
-          <Text style={[styles.text_white, {color: "#8f8f8f"}]}>{recent[0]}</Text>
+          <Text style={[styles.text_white, { color: "#8f8f8f" }]}>
+            {recent[0]}
+          </Text>
         </View>
-        <View style={{width: 100, marginRight: 50, paddingTop: 5}}>
-          <Text style={[styles.text_white, { fontSize: 12, color:"#8f8f8f" }]}>{recent[1]}</Text>
+        <View style={{ width: 100, marginRight: 50, paddingTop: 5 }}>
+          <Text style={[styles.text_white, { fontSize: 12, color: "#8f8f8f" }]}>
+            {recent[1]}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

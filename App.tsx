@@ -16,7 +16,12 @@ import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { editAccount } from "./screens/editAccount";
-import { PostPageContext, authContext, chatContext } from "./constants/context";
+import {
+  PostPageContext,
+  authContext,
+  chatContext,
+  pageParam,
+} from "./constants/context";
 import { individualListing } from "./screens/individualListing";
 import { chatLanding } from "./screens/chatLanding";
 import { chat } from "./screens/chat";
@@ -82,16 +87,19 @@ function chatNavigator() {
 
 function ListingsNavigator() {
   const [postPage, setPostPage] = useState(0);
+  const [page, setPage] = useState(0);
   return (
     <PostPageContext.Provider value={{ postPage, setPostPage }}>
-      <AccountStack.Navigator headerMode={"none"}>
-        <AccountStack.Screen name="showListing" component={showListing} />
-        <AccountStack.Screen name="createListing" component={createListing} />
-        <AccountStack.Screen
-          name="individualListing"
-          component={individualListing}
-        />
-      </AccountStack.Navigator>
+      <pageParam.Provider value={{ page, setPage }}>
+        <AccountStack.Navigator headerMode={"none"}>
+          <AccountStack.Screen name="showListing" component={showListing} />
+          <AccountStack.Screen name="createListing" component={createListing} />
+          <AccountStack.Screen
+            name="individualListing"
+            component={individualListing}
+          />
+        </AccountStack.Navigator>
+      </pageParam.Provider>
     </PostPageContext.Provider>
   );
 }
@@ -192,39 +200,42 @@ const App = () => {
   useEffect(() => {
     getData();
     getMessages();
-    registerForPushNotificationsAsync().then((expo_token) => {
-      if (expo_token) AsyncStorage.setItem("expo_token", expo_token);
-      axios.post(`${ENDPOINT}/setExpoToken`, {
-        user_token: userToken,
-        expo_token: expo_token,
+    if (Platform.OS != "web") {
+      registerForPushNotificationsAsync().then((expo_token) => {
+        if (expo_token) AsyncStorage.setItem("expo_token", expo_token);
+        axios.post(`${ENDPOINT}/setExpoToken`, {
+          user_token: userToken,
+          expo_token: expo_token,
+        });
       });
-    });
 
-    if (notificationListener) {
-      // This listener is fired whenever a notification is received while the app is foregrounded
-      notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {
-          getMessages();
-          setNotification(notification);
-        });
+      if (notificationListener) {
+        // This listener is fired whenever a notification is received while the app is foregrounded
+        notificationListener.current =
+          Notifications.addNotificationReceivedListener((notification) => {
+            getMessages();
+            setNotification(notification);
+          });
 
-      // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-      responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {
-        });
-
-      return () => {
-        if (notificationListener.current) {
-          Notifications.removeNotificationSubscription(
-            notificationListener.current
+        // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+        responseListener.current =
+          Notifications.addNotificationResponseReceivedListener(
+            (response) => {}
           );
-        }
-        if (responseListener.current) {
-          Notifications.removeNotificationSubscription(
-            responseListener.current
-          );
-        }
-      };
+
+        return () => {
+          if (notificationListener.current) {
+            Notifications.removeNotificationSubscription(
+              notificationListener.current
+            );
+          }
+          if (responseListener.current) {
+            Notifications.removeNotificationSubscription(
+              responseListener.current
+            );
+          }
+        };
+      }
     }
   }, []);
 

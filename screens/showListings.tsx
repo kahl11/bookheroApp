@@ -30,10 +30,9 @@ const queryClient = new QueryClient({
   },
 });
 
-const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
+const ListingRow = ({ setPostPage, navigation, filter, maxPages, page, setPage }: any) => {
   const [height, setHeight] = useState(0);
   const [endOfpages, setEndOfPages] = useState(0);
-    const {page, setPage} = useContext(pageParam);
   const {
     status,
     data,
@@ -53,6 +52,7 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
         : `${ENDPOINT}/getPosts?page=${page}`;
       const res = await axios.get(endpoint);
       setPage(page + 1);
+      console.log(page)
       return res;
     },
     {
@@ -60,9 +60,6 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
       getNextPageParam: (lastPage) => false,
     }
   );
-  useEffect(() => {
-    setPage(0);
-  }, [page]);
   return status === "loading" ? (
     <Text>Loading...</Text>
   ) : status === "error" ? (
@@ -94,6 +91,7 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
                 onPress={() => {
                   navigation.navigate("individualListing");
                   setPostPage(pageData[0]);
+                  setPage(0);
                 }}
               >
                 <View style={touchable_styles.productRowImageView}>
@@ -143,6 +141,7 @@ const ListingRow = ({ setPostPage, navigation, filter, maxPages }: any) => {
 
 export const showListing = ({ navigation }) => {
   let { postPage, setPostPage } = useContext(PostPageContext);
+  let { page, setPage } = useContext(pageParam);
   const [filter, setFilter] = useState("");
   const [maxPages, setMaxPages] = useState<number | null>(null);
   const [searchParam, setSearchParam] = useState("");
@@ -151,8 +150,9 @@ export const showListing = ({ navigation }) => {
     setMaxPages(mp.data);
   };
   useEffect(() => {
+    setPage(0);
     getNumPages();
-  }, []);
+  }, [navigation.]);
   return (
     <Fragment>
       <SafeAreaView style={styles.background} />
@@ -161,13 +161,7 @@ export const showListing = ({ navigation }) => {
           <Text style={styles.title_header}>Find Books</Text>
           <View style={[styles.row, { marginTop: 25 }]}>
             <TouchableOpacity
-              style={[touchable_styles.halfButtonDark]}
-              onPress={() => {}}
-            >
-              <Text style={touchable_styles.lightText}>Filter</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[touchable_styles.halfButtonDark]}
+              style={[touchable_styles.wideButtonDark, {marginBottom: 0}]}
               onPress={() => {
                 navigation.navigate("createListing");
               }}
@@ -192,6 +186,8 @@ export const showListing = ({ navigation }) => {
               navigation={navigation}
               filter={filter}
               maxPages={maxPages}
+              page={page}
+              setPage={setPage}
             />
           ) : null}
         </QueryClientProvider>

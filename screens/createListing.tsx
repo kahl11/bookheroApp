@@ -31,11 +31,12 @@ import { ENDPOINT } from "@env";
 import * as Crypto from "expo-crypto";
 import { Fragment } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { locationType } from "../constants/Constants";
 import { pageParam } from "../constants/context";
 import * as ImageManipulator from "expo-image-manipulator";
+import { Icon } from "react-native-paper/lib/typescript/components/Avatar/Avatar";
+import { CreateListingMap } from "../js/components/Map";
 
 interface post {
   imageName: string;
@@ -94,7 +95,7 @@ const pickImage = async (setImage: Function, setImageName: Function) => {
   });
   const manipResult = await ImageManipulator.manipulateAsync(
     result.localUri || result.uri,
-    [{resize: {width:720}}],
+    [{ resize: { width: 720 } }],
     { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
   );
   setImage(manipResult);
@@ -154,6 +155,7 @@ export const createListing = ({ navigation }: any) => {
   const [username, setUsername] = useState("");
 
   const { setPage } = useContext(pageParam);
+  const scrollRef = useRef(null);
 
   const [location, setLocation] = useState<locationType | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -186,172 +188,145 @@ export const createListing = ({ navigation }: any) => {
   return (
     <Fragment>
       <SafeAreaView style={styles.background} />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, backgroundColor: colors.background_dark }}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.container_header}>
-            <Text style={styles.title_header}>Create Listing</Text>
-          </View>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView
-              contentContainerStyle={{
-                justifyContent: "flex-end",
-                flexGrow: 1,
-                alignItems: "center",
-                backgroundColor: colors.dark,
-                flexDirection: "column",
-              }}
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.dark }}>
+        <View style={styles.container_header_row}>
+          <TouchableOpacity style={{paddingLeft: 10,alignSelf: "flex-start", width: 40, marginTop: 5, zIndex: 10}}
+          onPress={() => {
+            navigation.navigate("showListing");
+          }}
+          >
+            <MaterialCommunityIcons name="arrow-left" color={colors.off_white} size={28} />
+          </TouchableOpacity>
+          <Text style={[styles.title_header, {width: 300, flexGrow: 1, marginLeft: -40}]}>Create Listing</Text>
+        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            ref={scrollRef}
+            contentContainerStyle={{
+              justifyContent: "flex-end",
+              flexGrow: 1,
+              alignItems: "center",
+              backgroundColor: colors.dark,
+              flexDirection: "column",
+            }}
+          >
+            <TouchableOpacity
+              style={[touchable_styles.imageSelector]}
+              onPress={() => pickImage(setImage, setImageName)}
             >
-              <TouchableOpacity
-                style={[touchable_styles.imageSelector]}
-                onPress={() => pickImage(setImage, setImageName)}
-              >
-                {SelectedImage.uri ? (
-                  <Image
-                    source={{ uri: SelectedImage.uri }}
-                    resizeMode="cover"
-                    style={{ width: "100%", height: "100%" }}
-                  />
-                ) : (
-                  <Fragment>
-                    <MaterialCommunityIcons
-                      name="plus"
-                      color="white"
-                      size={22}
-                    />
-                    <Text style={touchable_styles.imageSelectorText}>
-                      Select Image
-                    </Text>
-                  </Fragment>
-                )}
-              </TouchableOpacity>
-              <TextInput
-                style={styles.input}
-                onChangeText={setBookTitle}
-                placeholder="Textbook Title"
-                autoCapitalize="none"
-              />
+              {SelectedImage.uri ? (
+                <Image
+                  source={{ uri: SelectedImage.uri }}
+                  resizeMode="cover"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              ) : (
+                <Fragment>
+                  <MaterialCommunityIcons name="plus" color="white" size={22} />
+                  <Text style={touchable_styles.imageSelectorText}>
+                    Select Image
+                  </Text>
+                </Fragment>
+              )}
+            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              onChangeText={setBookTitle}
+              placeholder="Textbook Title"
+              autoCapitalize="none"
+            />
 
-              <TextInput
-                style={styles.input}
-                onChangeText={setSchool}
-                placeholder="School"
-                autoCapitalize="none"
-              />
-              <TextInput
-                style={styles.input}
-                onChangeText={setClassCode}
-                placeholder="Course"
-                autoCapitalize="none"
-              />
-              <TextInput
-                style={styles.input}
-                onChangeText={(value) => {
-                  setPrice(+value);
-                }}
-                keyboardType="decimal-pad"
-                placeholder="$ Price"
-                autoCapitalize="none"
-              />
-              <TextInput
-                style={[styles.tallInput, {}]}
-                onChangeText={setDescription}
-                placeholder="Decscription"
-                autoCapitalize="none"
-                multiline={true}
-              />
-              <View style={touchable_styles.mapHolder}>
-                {location &&
-                (Platform.OS === "ios" || Platform.OS === "android") ? (
-                  <Fragment>
-                    <Text
-                      style={[touchable_styles.lightText, { marginBottom: 5 }]}
-                    >
-                      Select Approximate Location
-                    </Text>
-                    <MapView
-                      style={{ width: "100%", height: "100%" }}
-                      initialRegion={{
-                        latitude: location.lat + 0.001,
-                        longitude: location.long,
-                        latitudeDelta: 0.015,
-                        longitudeDelta: 0.015,
-                      }}
-                      onMapReady={() => setMapReady(true)}
-                      onPress={(e) => {
-                        setLocation({
-                          lat: e.nativeEvent.coordinate.latitude,
-                          long: e.nativeEvent.coordinate.longitude,
-                        });
-                      }}
-                    >
-                      <Marker
-                        draggable
-                        coordinate={{
-                          latitude: location.lat,
-                          longitude: location.long,
-                        }}
-                        onDragEnd={(e) => {
-                          setLocation({
-                            lat: e.nativeEvent.coordinate.latitude,
-                            long: e.nativeEvent.coordinate.longitude,
-                          });
-                        }}
-                        image={require("../assets/images/mapMarker.png")}
-                      />
-                    </MapView>
-                  </Fragment>
-                ) : null}
-                {!mapReady ? (
-                  <View style={{ alignItems: "center" }}>
-                    <ActivityIndicator size="large" color="#fefefe" />
-                    <Text style={{ color: "#fefefe" }}>Loading Map</Text>
-                  </View>
-                ) : null}
-              </View>
-              <TouchableOpacity //upload button
-                style={[touchable_styles.wideButtonLight, { marginTop: 15 }]}
-                onPress={() =>
-                  handleUploadPhoto(SelectedImage, setStatus, imageName).then(
-                    () => {
-                      if (location) {
-                        var newPost: post = {
-                          course: classCode,
-                          imageName: imageName,
-                          title: bookTitle,
-                          price: price,
-                          description: description,
-                          school: school,
-                          user: username,
-                          location: location,
-                        };
-                      } else {
-                        //idealy this neverhappens, otherwise someone ends up on null island
-                        var newPost: post = {
-                          course: classCode,
-                          imageName: imageName,
-                          title: bookTitle,
-                          price: price,
-                          description: description,
-                          school: school,
-                          user: username,
-                          location: { lat: 0, long: 0 },
-                        };
-                      }
-                      uploadPost(newPost, navigation);
-                      setPage(0);
+            <TextInput
+              style={styles.input}
+              onChangeText={setSchool}
+              placeholder="School"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={setClassCode}
+              placeholder="Course"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={(value) => {
+                setPrice(+value);
+              }}
+              keyboardType="decimal-pad"
+              placeholder="$ Price"
+              autoCapitalize="none"
+            />
+            <TextInput
+              onFocus={() => {
+                //@ts-ignore
+                if (scrollRef.current) scrollRef.current.scrollTo(300);
+              }}
+              style={[styles.tallInput, {}]}
+              onChangeText={setDescription}
+              placeholder="Decscription"
+              autoCapitalize="none"
+              multiline={true}
+            />
+            <View style={touchable_styles.mapHolder}>
+              {location &&
+              (Platform.OS === "ios" || Platform.OS === "android") ? (
+                <Fragment>
+                  <Text
+                    style={[touchable_styles.lightText, { marginBottom: 5 }]}
+                  >
+                    Select Approximate Location
+                  </Text>
+                  <CreateListingMap location={location} setMapReady={setMapReady} setLocation={setLocation}/>
+                </Fragment>
+              ) : null}
+              {!mapReady ? (
+                <View style={{ alignItems: "center" }}>
+                  <ActivityIndicator size="large" color="#fefefe" />
+                  <Text style={{ color: "#fefefe" }}>Loading Map</Text>
+                </View>
+              ) : null}
+            </View>
+            <TouchableOpacity //upload button
+              style={[touchable_styles.wideButtonLight, { marginTop: 15 }]}
+              onPress={() =>
+                handleUploadPhoto(SelectedImage, setStatus, imageName).then(
+                  () => {
+                    if (location) {
+                      var newPost: post = {
+                        course: classCode,
+                        imageName: imageName,
+                        title: bookTitle,
+                        price: price,
+                        description: description,
+                        school: school,
+                        user: username,
+                        location: location,
+                      };
+                    } else {
+                      //idealy this neverhappens, otherwise someone ends up on null island
+                      var newPost: post = {
+                        course: classCode,
+                        imageName: imageName,
+                        title: bookTitle,
+                        price: price,
+                        description: description,
+                        school: school,
+                        user: username,
+                        location: { lat: 0, long: 0 },
+                      };
                     }
-                  )
-                }
-              >
-                <Text style={touchable_styles.darkText}>Upload</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </TouchableWithoutFeedback>
-        </SafeAreaView>
-      </KeyboardAvoidingView>
+                    uploadPost(newPost, navigation);
+                    setPage(0);
+                  }
+                )
+              }
+            >
+              <Text style={touchable_styles.darkText}>Upload</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
     </Fragment>
   );
 };

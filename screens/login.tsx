@@ -104,13 +104,13 @@ export const login = ({ navigation }: { navigation: any }) => {
             </TouchableOpacity>
             <View style={[styles.row, { marginBottom: 40 }]}>
               <TouchableOpacity
-                style={[touchable_styles.halfButtonLight]}
+                style={[touchable_styles.halfButtonDark]}
                 onPress={() => navigation.navigate("home")}
               >
                 <Text style={touchable_styles.lightText}>Back</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[touchable_styles.halfButtonLight]}
+                style={[touchable_styles.halfButtonDark]}
                 onPress={() => navigation.navigate("register")}
               >
                 <Text style={touchable_styles.lightText}>Register</Text>

@@ -18,6 +18,7 @@ export const colors = {
   background_grey: "#171717",
   dark: "#212121",
   main: "#bbf299",
+  main_disabled: '#cfe3c3',
   accent: "#007366",
   blue_grey: "#0C0E12",
   off_white: "#E0E0E0",
@@ -62,7 +63,8 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.background_dark,
     alignItems: "flex-start",
     justifyContent: "center",
-    flexDirection: "row"
+    flexDirection: "row",
+    width: '100%'
   },
   image: {
     flex: 1,

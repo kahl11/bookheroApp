@@ -137,7 +137,7 @@ export const register = ({ navigation }) => {
                 style={[touchable_styles.halfButtonLight]}
                 onPress={register}
               >
-                <Text style={touchable_styles.lightText}>Create</Text>
+                <Text style={touchable_styles.darkText}>Create</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[touchable_styles.halfButtonDark]}
