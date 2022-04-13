@@ -174,7 +174,7 @@ export const createListing = ({ navigation }: any) => {
   }, []);
 
 const returnLoginWarning = async () => {
-    return ();
+    return (); //TODO:
 }
 
   const getUser = async () => {
@@ -188,7 +188,6 @@ const returnLoginWarning = async () => {
       }
     } catch (e) {
       returnLoginWarning();
-      //TODO: return components here that warn of the login requirement for creating listing
       // error reading value
     }
   };
