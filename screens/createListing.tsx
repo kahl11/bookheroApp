@@ -173,11 +173,22 @@ export const createListing = ({ navigation }: any) => {
     })();
   }, []);
 
+const returnLoginWarning = async () => {
+    return ();
+}
+
   const getUser = async () => {
     try {
       let user = await AsyncStorage.getItem("username");
-      if (user) setUsername(user);
+      if (user) {
+        setUsername(user);
+      }
+      else {
+        returnLoginWarning();
+      }
     } catch (e) {
+      returnLoginWarning();
+      //TODO: return components here that warn of the login requirement for creating listing
       // error reading value
     }
   };
