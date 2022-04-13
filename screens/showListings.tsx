@@ -152,7 +152,7 @@ export const showListing = ({ navigation }) => {
   useEffect(() => {
     setPage(0);
     getNumPages();
-  }, [navigation.]);
+  }, [navigation]);
   return (
     <Fragment>
       <SafeAreaView style={styles.background} />
