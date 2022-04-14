@@ -21,9 +21,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  AsyncStorage,
   ActivityIndicator,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors, styles } from "../styles/style";
 import { touchable_styles } from "../styles/touchable_styles";
 import * as ImagePicker from "expo-image-picker";
@@ -159,6 +159,7 @@ export const createListing = ({ navigation }: any) => {
 
   const [location, setLocation] = useState<locationType | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [noLoginErrorMessage, setNoLoginErrorMessage] = useState("")
 
   useEffect(() => {
     (async () => {
@@ -173,9 +174,9 @@ export const createListing = ({ navigation }: any) => {
     })();
   }, []);
 
-const returnLoginWarning = async () => {
-    return (); //TODO:
-}
+  const displayLoginWarning = async () => {
+    setNoLoginErrorMessage("WARNING: YOU ARE NOT LOGGED IN. YOU MUST BE LOGGED IN TO CREATE A LISTING");
+  }
 
   const getUser = async () => {
     try {
@@ -184,10 +185,10 @@ const returnLoginWarning = async () => {
         setUsername(user);
       }
       else {
-        returnLoginWarning();
+        displayLoginWarning();
       }
     } catch (e) {
-      returnLoginWarning();
+      displayLoginWarning();
       // error reading value
     }
   };
@@ -220,6 +221,7 @@ const returnLoginWarning = async () => {
               flexDirection: "column",
             }}
           >
+          <Text style={{color: 'red'}}>{noLoginErrorMessage}</Text>
             <TouchableOpacity
               style={[touchable_styles.imageSelector]}
               onPress={() => pickImage(setImage, setImageName)}
