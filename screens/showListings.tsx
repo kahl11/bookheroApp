@@ -150,6 +150,11 @@ export const showListing = ({ navigation }) => {
     setMaxPages(mp.data);
   };
   useEffect(() => {
+    if(postPage > -1){
+      navigation.navigate('individualListing')
+    }
+  }, [postPage])
+  useEffect(() => {
     setPage(0);
     getNumPages();
   }, [navigation]);
@@ -161,6 +166,7 @@ export const showListing = ({ navigation }) => {
           <Text style={styles.title_header}>Find Books</Text>
           <View style={[styles.row, { marginTop: 25 }]}>
             <TouchableOpacity
+              testID="create-listing"
               style={[touchable_styles.wideButtonDark, {marginBottom: 0}]}
               onPress={() => {
                 navigation.navigate("createListing");

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "jsxImportSource": "@emotion/react",
     "jsx": "react-native",
     "lib": [
       "dom",
