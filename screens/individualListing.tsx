@@ -91,6 +91,7 @@ function Listing({ navigation, signedIn }) {
           </TouchableOpacity>
           <View>
             <Text
+            testID="listing-header"
               style={[
                 styles.title_header,
                 { width: 400, flexGrow: 1, marginLeft: -40 },
