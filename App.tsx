@@ -86,8 +86,10 @@ function chatNavigator() {
 }
 
 function ListingsNavigator() {
+  const [postPage, setPostPage] = useState(0);
   const [page, setPage] = useState(0);
   return (
+    <PostPageContext.Provider value={{ postPage, setPostPage }}>
       <pageParam.Provider value={{ page, setPage }}>
         <AccountStack.Navigator headerMode={"none"}>
           <AccountStack.Screen name="showListing" component={showListing} />
@@ -98,15 +100,13 @@ function ListingsNavigator() {
           />
         </AccountStack.Navigator>
       </pageParam.Provider>
+    </PostPageContext.Provider>
   );
 }
 
 function Tabs() {
   const { authenticated } = useContext(authContext);
-  const [postPage, setPostPage] = useState(-1);
-
   return (
-    <PostPageContext.Provider value={{ postPage, setPostPage }}>
     <Tab.Navigator
       activeColor={colors.main}
       inactiveColor={colors.accent}
@@ -120,7 +120,7 @@ function Tabs() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons testID='home-nav' name="home" color={color} size={22} />
+            <MaterialCommunityIcons name="home" color={color} size={22} />
           ),
         }}
       />
@@ -130,7 +130,7 @@ function Tabs() {
         options={{
           tabBarLabel: "Listings",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons testID="listings-nav" name="post" color={color} size={22} />
+            <MaterialCommunityIcons name="post" color={color} size={22} />
           ),
         }}
       />
@@ -141,7 +141,7 @@ function Tabs() {
           options={{
             tabBarLabel: "Login",
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons testID='login-nav' name="account" color={color} size={22} />
+              <MaterialCommunityIcons name="account" color={color} size={22} />
             ),
           }}
         />
@@ -153,7 +153,7 @@ function Tabs() {
             options={{
               tabBarLabel: "Chats",
               tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons testID='chat-nav' name="chat" color={color} size={22} />
+                <MaterialCommunityIcons name="chat" color={color} size={22} />
               ),
             }}
           />
@@ -164,7 +164,6 @@ function Tabs() {
               tabBarLabel: "Account",
               tabBarIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  testID='account-nav'
                   name="account"
                   color={color}
                   size={22}
@@ -175,7 +174,6 @@ function Tabs() {
         </>
       )}
     </Tab.Navigator>
-    </PostPageContext.Provider>
   );
 }
 

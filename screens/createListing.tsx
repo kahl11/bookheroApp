@@ -221,7 +221,7 @@ export const createListing = ({ navigation }: any) => {
               flexDirection: "column",
             }}
           >
-          <Text testID="warning-text" style={{color: 'red'}}>{noLoginErrorMessage}</Text>
+          <Text style={{color: 'red'}}>{noLoginErrorMessage}</Text>
             <TouchableOpacity
               style={[touchable_styles.imageSelector]}
               onPress={() => pickImage(setImage, setImageName)}
