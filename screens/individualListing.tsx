@@ -49,13 +49,13 @@ const queryClient = new QueryClient({
 });
 
 function Listing({ navigation, signedIn }) {
-  const PostContext = useContext(PostPageContext);
+  let { postPage, setPostPage } = useContext(PostPageContext);
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const [mapReady, setMapReady] = useState(false);
   let { chatId, setChatId } = useContext(chatContext);
   const { isLoading, error, data, isFetching } = useQuery("repoData", () =>
-    fetch(`${ENDPOINT}/getIndividualPost?id=${PostContext.postPage}`).then(
+    fetch(`${ENDPOINT}/getIndividualPost?id=${postPage}`).then(
       (res) => {
         return res.json();
       }
@@ -79,6 +79,7 @@ function Listing({ navigation, signedIn }) {
               zIndex: 10,
             }}
             onPress={() => {
+              setPostPage(-1);
               navigation.navigate("showListing");
             }}
           >
@@ -109,7 +110,7 @@ function Listing({ navigation, signedIn }) {
               style={[
                 styles.individualListingText,
                 {
-                  fontSize: 50,
+                  fontSize: 45,
                   textAlign: "left",
                   marginLeft: "10%",
                   marginTop: 15,
@@ -124,7 +125,7 @@ function Listing({ navigation, signedIn }) {
                 style={[
                   styles.individualListingText,
                   {
-                    fontSize: 24,
+                    fontSize: 22,
                     textAlign: "right",
                     marginRight: "20%",
                     marginTop: 20,
@@ -136,7 +137,7 @@ function Listing({ navigation, signedIn }) {
               <Text
                 style={[
                   styles.individualListingText,
-                  { fontSize: 24, textAlign: "right", marginRight: "20%" },
+                  { fontSize: 22, textAlign: "right", marginRight: "20%" },
                 ]}
               >
                 {new Date(data[8]).toLocaleDateString(undefined, {
@@ -198,6 +199,7 @@ function Listing({ navigation, signedIn }) {
               textStyle={touchable_styles.lightText}
               text={"Back"}
               onClick={() => {
+                setPostPage(-1);
                 navigation.navigate("showListing");
               }}
             />
