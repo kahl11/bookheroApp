@@ -3,7 +3,7 @@ describe('App General Tests', () => {
       cy.visit('http://localhost:19006/');
       cy.get('[data-testid=header]')
       .invoke('text')
-      .should('equal', 'Home');
+      .should('equal', 'Book Hero');
     })
   })
   

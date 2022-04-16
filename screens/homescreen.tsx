@@ -68,12 +68,10 @@ export const home = ({ navigation }) => {
         <View style={dark_blue_container}>
           <Text style={conatainer_header}>New Posts</Text>
           <View style={row}>
-          {Array.isArray(listings) ? listings.map((l, index) => {
+          {Array.isArray(listings) ? listings.map((l) => {
             console.log(l)
             return(
               <TouchableOpacity
-              key={`new-post-${index}`}
-              testID={`new-post-${index}`}
               style={product_container}
               onPress={() => {
                   navigation.navigate("showListing");
@@ -83,7 +81,6 @@ export const home = ({ navigation }) => {
               <Image
                 style={{width: '100%', height: '70%', borderTopLeftRadius: 5, borderTopRightRadius: 5}}
                 source={{ uri: `${ENDPOINT}/${l[4]}` }}
-                testID={`post-image-${index}`}
               />
               <View style={css`display: flex; flexDirection: row; alignItems: center; paddingTop: 12px;`}>
               <Text style={css`
@@ -95,9 +92,7 @@ export const home = ({ navigation }) => {
               color: white;
               flex: 1;
               `}>${l[5]}</Text>
-              <Text 
-              testID={`post-name-${index}`}
-              style={css`
+              <Text style={css`
               fontFamily: 'Rubik';
               fontStyle: normal;
               fontWeight: 400;
