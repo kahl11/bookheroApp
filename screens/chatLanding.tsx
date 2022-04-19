@@ -27,7 +27,7 @@ const ChatListElement = (props: {
   navigation: any;
   index: number;
 }) => {
-  const [recent, setRecent] = useState<string[]>([]);
+  const [recent, setRecent] = useState<string[]>(["", ""]);
   useEffect(() => {
     AsyncStorage.getItem("userToken").then((token) => {
       console.log(token)
@@ -35,12 +35,15 @@ const ChatListElement = (props: {
         .get(
           `${ENDPOINT}/getMostRecentMessage?userToken=${token}&partner=${props.chatUser}`
         )
-        .then((response: any) => {
+        .then((response : any) => {
           setRecent(response.data);
-        });
+        }, (error : any) => {
+        setRecent(["", ""]);}
+        );
     });
   }, []);
 
+   
   const { chatId, setChatId } = useContext(chatContext);
   return (
     <TouchableOpacity
@@ -70,7 +73,7 @@ const ChatListElement = (props: {
         </View>
       </View>
     </TouchableOpacity>
-  );
+  );   
 };
 
 export const chatLanding = ({ navigation }) => {
